@@ -1,0 +1,32 @@
+
+.right{background:#0F3;  background: #fbfbfb; padding:10px; padding-bottom:20px; margin:0 0 0 246px;}
+.topnav{ height:23px; width:100%; background-color:#e4e3e6; padding-top:8px;}
+.topnav p{ margin-left:12px;}
+.con1{ width:100%; margin-top:15px; float:left;}
+.con1Left{ width:30%; float:left;}
+.con1Right{ width:69%; float:right;}
+.con1Left2{ width:30%; float:left; margin-top:10px;}
+.con1Right2{ width:69%; float:right;margin-top:10px;}
+.jsFljg{ height:32px; float:left; border-left:1px solid #e2e2e2;}
+.jsFljg p{ background:#f5f4f4; border:1px solid #e2e2e2; border-left:none; border-bottom:none; float:left; line-height:32px; padding:0px 15px;}
+.jsFljgCon{ width:100%; height:157px; border:1px solid #e2e2e2; float:left; background:#FFFFFF;}
+.jsnrjg{ height:32px; float:left; border-left:1px solid #e2e2e2;}
+.jsnrjg p{ background:#f5f4f4; border:1px solid #e2e2e2; border-left:none; border-bottom:none; float:left; line-height:32px; padding:0px 15px;}
+.jsnrjgCon{ width:100%; height:235px; border:1px solid #e2e2e2; float:left; background:#FFFFFF;}
+.jsnrjgCon2{ width:100%; height:235px; border:1px solid #e2e2e2; float:left; background:#FFFFFF;}
+
+.FCon_1{width:100%; height:auto;float:left; margin-top:10px;}
+.FCon_1 p{ width:100%; margin-bottom:8px; float:left;}
+.FCon_1 p input{ width:352px; height:23px; float:left; border:1px solid #e2e2e2; background:#FFFFFF;}
+.FCon_1 p span{ width:67px; height:28px; float:left; text-align:right; line-height:28px; margin-right:10px; display:block;}
+
+.FCon_2{width:100%; height:auto;float:left; margin-top:10px;}
+.FCon_2 p{ width:100%; margin-bottom:8px; float:left;}
+.FCon_2 p input{ width:352px; height:23px; float:left; border:1px solid #e2e2e2; background:#FFFFFF;}
+.FCon_2 p span{ width:67px; height:28px; float:left; text-align:right; line-height:28px; margin-right:10px; display:block;}
+.FCon_2 p textarea{ width:352px; height:100px; border:1px solid #e2e2e2; float:left; background:#FFFFFF;}
+
+.FljgConBt{float:left; background:#e2e2e2; width:100%; padding-top:5px; padding-bottom:5px;}
+.FljgConBt p{ float:left; margin-right:1px; display:inline;}
+.FljgConBt p a{ height:21px; background:#fafafa; padding:0px 10px; float:left; line-height:21px; color:#626263; text-decoration:none;border:1px solid #c4c1c1; margin-left:10px;}
+.FljgConBt p a:hover{color:#de6213;}

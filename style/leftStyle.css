@@ -1,0 +1,19 @@
+/* CSS Document */
+body {
+	background: #ffece1 url(../images/bgLeftmain.jpg) repeat-y right;
+}
+.welcome{ width:166px; height:28px; float:left; background:url(../images/bgLeftNav.jpg) repeat-x;  }
+.welcome p{ background:url(../images/bgBt1.jpg) no-repeat left center; padding-left:20px; float:left; line-height:28px; margin-left:10px; display:inline; color:#FFFFFF; }
+.welcome a{ float:right; color:#FFFFFF; text-decoration:none; margin-right:10px; display:inline; line-height:28px; }
+.leftNav{ width:166px; float:left;}
+
+.LNav_1{ width:166px; height:26px; border-bottom:1px solid #ffb78b; float:left; background:url(../images/bgLeftNav2.jpg) repeat-x;}
+.LNav_1 a{ line-height:26px; height:26px; background:url(../images/icon1.jpg) no-repeat left center; padding-left:25px; margin-left:10px; display:inline; color:#803101; text-decoration:none; font-weight:bold; float:left;}
+.LNav_1 a:hover{ color:#FF0000}
+
+.LNav_2{ width:166px; background:#FFFFFF; float:left; padding:10px 0px;}
+.LNav_2 p{ width:146px; padding-left:20px; line-height:20px; float:left;}
+.LNav_2 p a{ background:url(../images/icon2.jpg) no-repeat left center; padding-left:20px; height:20px; float:left; color:#803101; text-decoration:none;}
+.LNav_2 p a:hover{ color:#FF0000}
+
+

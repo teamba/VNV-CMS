@@ -1,0 +1,62 @@
+#left{ height:auto; width:246px; background:url(../images/left_bg.jpg) repeat-y; position:absolute;top:0;left:0;}
+.denglu{ height:170px; background:url(../images/denglu_bg.jpg) repeat-x; width:214px; padding-top:16px; padding-left:22px;}
+.denglu p.welcome{ color:#7c7c7c;}
+.denglu p.welcome span{ font-weight:bold;}
+.face{ height:75px; width:65px; float:left; margin-top:14px;}
+.face img{ width:61px; height:61px; border:1px solid #999; display:block;}
+.face p{ text-align:center; margin-top:5px; color:#7c7c7c;}
+.things{ height:75px; width:130px; float:left; display:inline; margin-left:13px;margin-top:10px;}
+.things p{ text-align:left;color:#7c7c7c;}
+.things .box{ width:120px; height:46px; border:1px solid #999; overflow:hidden; padding:3px; background-color:#FFF;}
+.things .box p{}
+.tuichu{ margin-top:25px; display:block; float:left; width:65px; height:24px; background:url(../images/btn-2.jpg) no-repeat; border:0;}
+.fanhui{margin-top:25px; display:block; float:left; width:108px; height:25px; background:url(../images/btn-1.jpg) no-repeat; margin-left:22px; display:inline;}
+
+ul#menu, ul#menu ul {
+  list-style-type:none;
+  width:236px;
+ 
+}
+
+ul#menu a {
+  display: block;
+  text-decoration: none;	
+}
+
+ul#menu li {
+  margin-top: 1px;
+}
+
+ul#menu li a {
+  background:#B0B0B0;
+  background:url(../images/left_menu_li_bg.jpg) repeat-x;
+  color:#7c7c7c;
+  font-size:14px;
+  padding-left:22px;
+  height:33px;
+  line-height:33px;
+  
+}
+
+ul#menu li a span {
+background:url(../images/document.gif) no-repeat left center; height:16px; width:16px; margin-right:10px; margin-top:7px; float:left;
+}
+
+ul#menu li a:hover {
+  background:#910000;
+  color:#FFF;
+}
+
+ul#menu li ul li a {
+  background:#efeff0;
+  color:#7c7c7c;
+  padding-left:50px;
+  font-weight:normal;
+  font-size:12px;
+}
+
+ul#menu li ul li a:hover {
+  background: #aaa;
+  border-left: 5px #910000 solid;
+  padding-left:45px;
+}

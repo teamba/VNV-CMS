@@ -1,0 +1,22 @@
+@charset "utf-8";
+/* CSS Document */
+
+body,td,th {
+	font-family: 宋体;
+	font-size: 12px;
+	color: #742c00;
+}
+body {
+	background-color: #b04301;
+	margin:0;
+	padding:0;
+}
+div,ul,li,p,span{ margin:0; padding:0;}
+
+.denglu{ width:1003px; height:613px; background:url(../images/dl.jpg) no-repeat; margin:0 auto; padding:0; }
+
+.dlMain{ width:284px; height:93px; float:left; margin:263px 0px 0px 363px; display:inline;}
+.dlMainLeft{ width:175px; float:left; text-align:left;}
+.dlMainLeft input{ margin-top:17px; float:right; width:112px; border:none; background:none;}
+.dlMainRight{float:right;}
+.dlMainRight a{ width:85px; height:93px; float:left; display:block inline;}
