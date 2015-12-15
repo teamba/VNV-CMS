@@ -1,30 +1,3 @@
-$(document).ready(function(){
-
-	// search the article group
-	$.post("/group/search", {
-		parentid: 0,
-		type: 1
-	}, function (data, textStatus) {
-
-	  	if (data.ok == 1) {
-	  		 
-	  		show_groups(data.groups);
-	  	}
-	  	else {
-	  		alert(data.msg);
-	  	};
-
-	}, "json");
-	
-	$("#btn_modify_group").click(function() {modify_group();});
-	$("#btn_add_group").click(function() {add_group();});
-	$("#btn_add_subgroup").click(function() {add_subgroup();});
-	$("#btn_delete_group").click(function() {delete_group();});
-
-	$("#btn_edit_article_group").click(function() {edit_article_group();});
-	$("#btn_list_article").click(function() {list_article();});
-	$("#btn_edit_article_priolity").click(function() {edit_article_priolity();});
-});
 
 // http://blog.csdn.net/hurryjiang/article/details/7453235
 // http://www.codeweblog.com/jstree-the-demo-how-to-create-a-child-node/

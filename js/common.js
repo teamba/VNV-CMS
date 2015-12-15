@@ -170,6 +170,11 @@ function jump(url) {
     $("#div_right_content").hide();
     $("#div_right_content").empty();
     $("#div_right_content").removeClass("right");
+
+    $("#div_right_content").css('left', '0px');
+    $("#div_right_content").show();
+    $("#div_foot").show();
+
     $("#div_right_content").load(url + " #div_right_content", function () {
         // do something
         switch (url) {
@@ -185,6 +190,8 @@ function jump(url) {
                 break;
 
             case "columnSet.html":
+                init_columnSet();
+                $.parser.parse();
                 break;
 
             case "dealer.html":
@@ -218,9 +225,6 @@ function jump(url) {
                 break;
         }
 
-        $("#div_right_content").css('left', '0px');
-        $("#div_right_content").show();
-        $("#div_foot").show();
     });
 }
 
@@ -250,4 +254,63 @@ function init_audio() {
 
 function init_article() {
     console.log("Enter init_article");
+}
+
+function create_column_node(column, columns, parent) {
+    $('#column_tree').tree('append', {
+        parent: parent.target,
+        data: {
+            id: column.ID,
+            text: column.Name
+        }
+    });
+
+    //$.parser.parse('#column_tree');
+
+    var node;
+    node = $('#column_tree').tree('find', column.ID);
+    //console.log("new node:" + node.id + "--" + node.text);
+    var i;
+    if (node) for (i = 0; i < columns.length; i++) if (columns[i].ParentID == column.ID) create_column_node(columns[i], columns, node);
+}
+
+function init_columnSet() {
+    // create the column tree
+    $.ajax({
+        type: "POST",
+        contentType: "application/json",
+        url: "../vnv.asmx/GetColumnAll",
+        data: "", // {parentID:0}
+        dataType: 'json',
+        success: function (result) {
+            //alert(result.d);
+            //console.log(result.d);
+            var columns = eval('(' + result.d + ')');
+            //console.log(columns.length);
+            var i;
+            var root = $('#column_tree').tree('getRoot');
+            for (i = 0; i < columns.items.length; i++) {
+                /*
+                console.log(columns[i].ID + '-' + columns[i].Name);
+                $('#column_tree').tree('append', {
+                parent: root.target,
+                data: {
+                id: columns[i].ID,
+                text: columns[i].Name
+                }
+                });
+                */
+
+                if (columns.items[i].ParentID == 0) create_column_node(columns.items[i], columns.items, root);
+            }
+        }
+    });
+
+    //init_page();
+
+    $('#column_tree').tree({
+        onClick: function (node) {
+            console.log(node.id + "-" + node.text);
+        }
+    });
 }
