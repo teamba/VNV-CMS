@@ -13,9 +13,27 @@ namespace web_service
         public int ParentID { get; set; }
         public string Name { get; set; }
         public string Code { get; set; }
-        public string Brief { get; set; }
 
         public clsColumn()
+        {
+            ID = 0;
+            ParentID = 0;
+            Name = "";
+            Code = "";
+        }
+
+        ~clsColumn() { }
+    }
+
+    public class clsColumnEx
+    {
+        public int ID {get;set;}
+        public int ParentID { get; set; }
+        public string Name { get; set; }
+        public string Code { get; set; }
+        public string Brief { get; set; }
+
+        public clsColumnEx()
         {
             ID = 0;
             ParentID = 0;
@@ -24,7 +42,7 @@ namespace web_service
             Brief = "";
         }
 
-        ~clsColumn() { }
+        ~clsColumnEx() { }
     }
 
     public class clsColumnSet : CollectionBase

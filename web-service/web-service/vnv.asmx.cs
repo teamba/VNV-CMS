@@ -39,12 +39,109 @@ namespace web_service
                 column.ParentID = (int)obj.ParentID;
                 column.Code = obj.Code.Trim();
                 column.Name = obj.Name.Trim();
+            }
+
+            clsResult result = new clsResult();
+            result.items = column;
+
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        [WebMethod]
+        public string GetColumnEx(int columnID)
+        {
+            t_Column obj = data.t_Column.First(c => c.ID == columnID);
+            clsColumnEx column = new clsColumnEx();
+
+            if (obj != null)
+            {
+                column.ID = obj.ID;
+                column.ParentID = (int)obj.ParentID;
+                column.Code = obj.Code.Trim();
+                column.Name = obj.Name.Trim();
                 column.Brief = obj.Brief.Trim();
             }
 
             clsResult result = new clsResult();
             result.items = column;
 
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        [WebMethod]
+        public string UpdateColumn(string strColumnEx)
+        {
+            clsColumnEx column = JsonConvert.DeserializeObject<clsColumnEx>(strColumnEx);
+
+            var obj = data.t_Column.First(c => c.ID == column.ID);
+
+            clsResult result = new clsResult();
+            if (obj == null)
+            {
+                result.flag = -1;
+                result.error = "cann't find the column";
+            }
+            else
+            {
+                obj.Name = column.Name.Trim();
+                obj.Code = column.Code.Trim();
+                obj.Brief = column.Brief.Trim();
+
+                data.SubmitChanges();
+            }
+
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        [WebMethod]
+        public string AddColumn(int parentID, string strColumnEx)
+        {
+            clsColumnEx column = JsonConvert.DeserializeObject<clsColumnEx>(strColumnEx);
+            clsResult result = new clsResult();
+            string output = JsonConvert.SerializeObject(result);
+
+            if (parentID != 0)
+            {
+                var obj = data.t_Column.First(c => c.ID == parentID);
+                if (obj == null)
+                {
+                    result.flag = -1;
+                    result.error = "parent unexist";
+                    output = JsonConvert.SerializeObject(result);
+                    return output;
+                }
+            }
+
+            t_Column tc = new t_Column();
+            tc.ParentID = parentID;
+            tc.Name = column.Name.Trim();
+            tc.Code = column.Code;
+            tc.Brief = column.Brief;
+            data.t_Column.InsertOnSubmit(tc);
+            data.SubmitChanges();
+
+            result.flag = tc.ID; // to be sure!
+            output = JsonConvert.SerializeObject(result);
+            return output;
+        }
+
+        [WebMethod]
+        public string DeleteColumn(int columnID)
+        {
+            var obj = data.t_Column.First(c => c.ID == columnID);
+            if (obj!=null)
+            {
+                data.t_Column.DeleteOnSubmit(obj);
+                data.SubmitChanges();
+            }
+
+            clsResult result = new clsResult();
             string output = JsonConvert.SerializeObject(result);
 
             return output;
@@ -65,7 +162,6 @@ namespace web_service
                 column.ParentID = (int)obj.ParentID;
                 column.Code = obj.Code.Trim();
                 column.Name = obj.Name.Trim();
-                column.Brief = obj.Brief.Trim();
 
                 columns.Add(column);
             }
@@ -93,7 +189,6 @@ namespace web_service
                 column.ParentID = (int)obj.ParentID;
                 column.Code = obj.Code.Trim();
                 column.Name = obj.Name.Trim();
-                column.Brief = obj.Brief.Trim();
 
                 columns.Add(column);
             }
