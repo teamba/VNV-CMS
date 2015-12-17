@@ -93,4 +93,72 @@ namespace web_service
         {
         }
     }
+
+    public class clsGroup
+    {
+        public int ID { get; set; }
+        public int ParentID { get; set; }
+        public int Type { get; set; }
+        public string Name { get; set; }
+
+        public clsGroup()
+        {
+            ID = 0;
+            ParentID = 0;
+            Type = 0;
+            Name = "";
+        }
+
+        ~clsGroup()
+        {
+        }
+    }
+
+    public class clsGroupSet : CollectionBase
+    {
+        ~clsGroupSet()
+        {
+            List.Clear();
+        }
+
+        public clsGroup this[int index]
+        {
+            get
+            {
+                if (index >= 0 && index < List.Count) return (clsGroup)List[index];
+                else return null;
+            }
+
+            set
+            {
+                if (index >= 0 && index < List.Count) List[index] = value;
+            }
+        }
+
+        public void Add(clsGroup group)
+        {
+            List.Add(group);
+        }
+    }
+
+    public class clsGroupEx
+    {
+        public int ID { get; set; }
+        public int ParentID { get; set; }
+        public int Type { get; set; }
+        public string Name { get; set; }
+        public string Code { get; set; }
+        public string Brief { get; set; }
+
+        public clsGroupEx()
+        {
+            ID = 0;
+            ParentID = 0;
+            Name = "";
+            Code = "";
+            Brief = "";
+        }
+
+        ~clsGroupEx() { }
+    }
 }

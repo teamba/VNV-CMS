@@ -1,5 +1,5 @@
-function create_article_node(group, groups, parent) {
-    $('#article_tree').tree('append', {
+function create_photo_node(group, groups, parent) {
+    $('#photo_tree').tree('append', {
         parent: parent.target,
         data: {
             id: group.ID,
@@ -8,13 +8,13 @@ function create_article_node(group, groups, parent) {
     });
 
     var node;
-    node = $('#article_tree').tree('find', group.ID);
+    node = $('#photo_tree').tree('find', group.ID);
     
     var i;
-    if (node) for (i = 0; i < groups.length; i++) if (groups[i].ParentID == group.ID) create_article_node(groups[i], groups, node);
+    if (node) for (i = 0; i < groups.length; i++) if (groups[i].ParentID == group.ID) create_photo_node(groups[i], groups, node);
 }
 
-function init_article() {
+function init_photo() {
     $.ajax({
         type: "POST",
         contentType: "application/json",
@@ -25,9 +25,9 @@ function init_article() {
             var groups = eval('(' + result.d + ')');
 
             var i;
-            var root = $('#article_tree').tree('getRoot');
+            var root = $('#photo_tree').tree('getRoot');
             for (i = 0; i < groups.items.length; i++) {
-                if (groups.items[i].ParentID == 0) create_article_node(groups.items[i], groups.items, root);
+                if (groups.items[i].ParentID == 0) create_photo_node(groups.items[i], groups.items, root);
             }
         }
     });

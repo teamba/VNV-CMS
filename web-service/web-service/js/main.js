@@ -102,19 +102,19 @@ function modify_group_node(id, name) {
 };
 
 function add_group() {
-	console.log("add_group");
+	//console.log("add_group");
 	var id = $("#txt_group_id").val();
 
 	var parent_id = "0";
 	if (id == '') {
-		console.log("create root group.");
+		//console.log("create root group.");
 	}
 	else {
 		var node = $("#jstree").jstree(true).get_node("group_node_" + id);
 		if (node != null) {
 			var parent_node_id = $("#jstree").jstree(true).get_parent(node);
 			if (parent_node_id != null) {
-				console.log(parent_node_id);
+				//console.log(parent_node_id);
 				var items = parent_node_id.toString().split("_");
 				if (items.length == 3) parent_id = items[2];				
 			}
@@ -124,7 +124,7 @@ function add_group() {
 	var name = $("#txt_group_name").val();
 	var brief = $("#txt_group_brief").val();
 
-	console.log("add_group: parent_id=" + parent_id);
+	//console.log("add_group: parent_id=" + parent_id);
 	$.post("/group/add", {
 		parentid: parent_id,
 		name: name,
@@ -161,7 +161,7 @@ function add_group_node(group) {
 };
 
 function add_subgroup() {
-	console.log("add_subgroup");
+	//console.log("add_subgroup");
 	var id = $("#txt_group_id").val();
 
 	var parent_id = "0";
@@ -175,7 +175,7 @@ function add_subgroup() {
 	var name = $("#txt_group_name").val();
 	var brief = $("#txt_group_brief").val();
 
-	console.log("add_group: parent_id=" + parent_id);
+	//console.log("add_group: parent_id=" + parent_id);
 	$.post("/group/add", {
 		parentid: parent_id,
 		name: name,
@@ -195,7 +195,7 @@ function add_subgroup() {
 };
 
 function delete_group() {
-	console.log("delete_group");
+	//console.log("delete_group");
 	var id = $("#txt_group_id").val();
 
 	if (id == '') {
