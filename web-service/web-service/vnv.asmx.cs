@@ -27,6 +27,8 @@ namespace web_service
             return "Hello World";
         }
 
+        #region Column Service
+
         [WebMethod]
         public string GetColumn(int columnID)
         {
@@ -50,31 +52,6 @@ namespace web_service
         }
 
         [WebMethod]
-        public string GetGroup(int groupID)
-        {
-            t_Group obj = data.t_Group.First(g => g.ID == groupID);
-            clsGroup group = new clsGroup();
-
-            clsResult result = new clsResult();
-            if (obj != null)
-            {
-                group.ID = obj.ID;
-                group.ParentID = (int)obj.ParentID;
-                group.Name = obj.Name.Trim();
-            }
-            else
-            {
-                result.flag = -1;
-                result.error = "cann't find the group";
-            }
-
-            string output = JsonConvert.SerializeObject(result);
-            result.items = group;
-
-            return output;
-        }
-
-        [WebMethod]
         public string GetColumnEx(int columnID)
         {
             t_Column obj = data.t_Column.First(c => c.ID == columnID);
@@ -93,33 +70,6 @@ namespace web_service
             result.items = column;
 
             string output = JsonConvert.SerializeObject(result);
-
-            return output;
-        }
-
-        [WebMethod]
-        public string GetGroupEx(int groupID)
-        {
-            t_Group obj = data.t_Group.First(g => g.ID == groupID);
-            clsGroupEx group = new clsGroupEx();
-
-            clsResult result = new clsResult();
-            if (obj != null)
-            {
-                group.ID = obj.ID;
-                group.ParentID = (int)obj.ParentID;
-                group.Name = obj.Name.Trim();
-                group.Type = (int)obj.Type;
-                group.Brief = obj.Brief.Trim();
-            }
-            else
-            {
-                result.flag = -1;
-                result.error = "cann't find the group";
-            }
-
-            string output = JsonConvert.SerializeObject(result);
-            result.items = group;
 
             return output;
         }
@@ -178,7 +128,7 @@ namespace web_service
             data.t_Column.InsertOnSubmit(tc);
             data.SubmitChanges();
 
-            result.flag = tc.ID; // to be sure!
+            result.flag = tc.ID; 
             output = JsonConvert.SerializeObject(result);
             return output;
         }
@@ -253,6 +203,64 @@ namespace web_service
             return output;
         }
 
+        #endregion
+
+        #region Group Service
+
+        [WebMethod]
+        public string GetGroup(int groupID)
+        {
+            t_Group obj = data.t_Group.First(g => g.ID == groupID);
+            clsGroup group = new clsGroup();
+
+            clsResult result = new clsResult();
+            if (obj != null)
+            {
+                group.ID = obj.ID;
+                group.ParentID = (int)obj.ParentID;
+                group.Name = obj.Name.Trim();
+            }
+            else
+            {
+                result.flag = -1;
+                result.error = "cann't find the group";
+            }
+
+            string output = JsonConvert.SerializeObject(result);
+            result.items = group;
+
+            return output;
+        }
+
+        [WebMethod]
+        public string GetGroupEx(int groupID)
+        {
+            t_Group obj = data.t_Group.First(g => g.ID == groupID);
+            clsGroupEx group = new clsGroupEx();
+
+            clsResult result = new clsResult();
+            if (obj != null)
+            {
+                group.ID = obj.ID;
+                group.ParentID = (int)obj.ParentID;
+                group.Name = obj.Name.Trim();
+                group.Type = (int)obj.Type;
+                group.Brief = obj.Brief.Trim();
+                group.Code = obj.Code.Trim();
+
+                result.items = group;
+            }
+            else
+            {
+                result.flag = -1;
+                result.error = "cann't find the group";
+            }
+
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
         [WebMethod]
         public string GetGroupAll(int Type)
         {
@@ -278,5 +286,81 @@ namespace web_service
 
             return output;
         }
+
+        [WebMethod]
+        public string AddGroup(int parentID, string strGroupEx)
+        {
+            clsGroupEx group = JsonConvert.DeserializeObject<clsGroupEx>(strGroupEx);
+            clsResult result = new clsResult();
+            string output = JsonConvert.SerializeObject(result);
+
+            if (parentID != 0)
+            {
+                var obj = data.t_Group.First(g => g.ID == parentID);
+                if (obj == null)
+                {
+                    result.flag = -1;
+                    result.error = "parent unexist";
+                    output = JsonConvert.SerializeObject(result);
+                    return output;
+                }
+            }
+
+            t_Group tg = new t_Group();
+            tg.ParentID = parentID;
+            tg.Name = group.Name.Trim();
+            tg.Code = group.Code.Trim();
+            tg.Brief = group.Brief.Trim();
+            tg.CreateDate = System.DateTime.Now;
+            tg.Type = group.Type;
+            data.t_Group.InsertOnSubmit(tg);
+            data.SubmitChanges();
+
+            result.flag = tg.ID; 
+            output = JsonConvert.SerializeObject(result);
+            return output;
+        }
+
+        [WebMethod]
+        public string UpdateGroup(string strGroupEx)
+        {
+            clsGroupEx group = JsonConvert.DeserializeObject<clsGroupEx>(strGroupEx);
+
+            var obj = data.t_Group.First(g => g.ID == group.ID);
+
+            clsResult result = new clsResult();
+            if (obj == null)
+            {
+                result.flag = -1;
+                result.error = "cann't find the group";
+            }
+            else
+            {
+                obj.Name = group.Name.Trim();
+                obj.Code = group.Code.Trim();
+                obj.Brief = group.Brief.Trim();
+                obj.Type = group.Type;
+
+                data.SubmitChanges();
+            }
+
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        [WebMethod]
+        public string DeleteGroup(int groupID)
+        {
+            string strSQL = "Delete t_Group Where ID=" + groupID;
+            data.ExecuteCommand(strSQL);
+
+            clsResult result = new clsResult();
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        #endregion
     }
 }
