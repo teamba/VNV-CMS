@@ -1,0 +1,9 @@
+{"total":7,"rows":[
+	{"name":"Title","value":"","group":"Basic info","editor":"text"},
+	{"name":"Author","value":"","group":"Basic info","editor":"text"},
+	{"name":"Source","value":"40","group":"Basic info","editor":"text"},
+	{"name":"Create Date","value":"01/02/2012","group":"Basic info","editor":"datebox"},
+	{"name":"Sub Title","value":"","group":"Basic info","editor":"text"},
+	{"name":"key word","value":"","group":"SEO","editor":"text"},
+	{"name":"Description","value":"","group":"SEO","editor":"text"}
+]}

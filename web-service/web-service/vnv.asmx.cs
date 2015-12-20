@@ -245,8 +245,8 @@ namespace web_service
                 group.ParentID = (int)obj.ParentID;
                 group.Name = obj.Name.Trim();
                 group.Type = (int)obj.Type;
-                group.Brief = obj.Brief.Trim();
-                group.Code = obj.Code.Trim();
+                group.Brief = (obj.Brief==null)?"":obj.Brief.Trim();
+                group.Code = (obj.Code==null)?"":obj.Code.Trim();
 
                 result.items = group;
             }
@@ -358,6 +358,146 @@ namespace web_service
             clsResult result = new clsResult();
             string output = JsonConvert.SerializeObject(result);
 
+            return output;
+        }
+
+        #endregion
+
+        #region Resource Service
+
+        [WebMethod]
+        public string GetResources(int groupID)
+        {
+            clsResource resource;
+            clsResourceSet resources = new clsResourceSet();
+
+            var objs = data.t_Resource.Where(r => r.GroupID == groupID);
+            foreach (var obj in objs)
+            {
+                resource = new clsResource();
+                resource.ID = obj.ID;
+                resource.Title = obj.Title;
+                resource.CreateDate = ((DateTime)obj.CreateDate).ToShortDateString();
+                resource.Type = (int)obj.ResourceType;
+                resource.GroupID = groupID;
+
+                resources.Add(resource);
+            }
+
+            clsResult result = new clsResult();
+
+            result.flag = resources.Count;
+            result.items = resources;
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        [WebMethod]
+        public string GetResourceEx(int ID)
+        {
+            clsResourceEx resource = new clsResourceEx();
+
+            var obj = data.t_Resource.First(r => r.ID == ID);
+            if (obj != null)
+            {
+                resource.Author = (obj.Author==null)?"": obj.Author.Trim();
+                resource.Brief = (obj.Brief == null) ? "" : obj.Brief.Trim();
+                resource.Content = (obj.Content == null) ? "" : obj.Content.Trim();
+                resource.CreateDate = (DateTime)obj.CreateDate;
+                resource.GroupID = (int)obj.GroupID;
+                resource.GroupUID = obj.GroupUID.Trim();
+                resource.ID = obj.ID;
+                resource.ParentUID = (obj.ParentUID == null) ? "" : obj.ParentUID.Trim();
+                resource.Source = (obj.Source == null) ? "" : obj.Source.Trim();
+                resource.Status = (int)obj.Status;
+                resource.SubTitle = (obj.SubTitle == null) ? "" : obj.SubTitle.Trim();
+                resource.Title = (obj.Title == null) ? "" : obj.Title.Trim();
+                resource.Type = (int)obj.ResourceType;
+                resource.UID = (obj.UID == null) ? "" : obj.UID.Trim();
+            }
+
+            clsResult result = new clsResult();
+            result.items = resource;
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        [WebMethod]
+        public string AddResource(int groupID, string strResourceEx, string content)
+        {
+            clsResourceEx resource = JsonConvert.DeserializeObject<clsResourceEx>(strResourceEx);
+            resource.Content = content;
+            t_Resource tc = new t_Resource();
+            tc.Author = resource.Author;
+            tc.Brief = resource.Brief;
+            tc.Content = resource.Content;
+            tc.CreateDate = DateTime.Now;
+            tc.GroupID = groupID;
+            tc.GroupUID = resource.GroupUID;
+            tc.ParentUID = "";
+            tc.ResourceType = resource.Type;
+            tc.Source = resource.Source;
+            tc.Status = resource.Status;
+            tc.SubTitle = resource.SubTitle;
+            tc.TextType = 0;
+            tc.Title = resource.Title;
+            tc.UID = Guid.NewGuid().ToString();
+
+            data.t_Resource.InsertOnSubmit(tc);
+            data.SubmitChanges();
+
+            clsResult result = new clsResult();
+            result.flag = tc.ID;
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        [WebMethod]
+        public string UpdateResource(string strResourceEx, string content)
+        {
+            clsResourceEx resource = JsonConvert.DeserializeObject<clsResourceEx>(strResourceEx);
+            resource.Content = content;
+            clsResult result = new clsResult();
+
+            t_Resource tc = data.t_Resource.First(r => r.ID == resource.ID);
+            if (tc == null)
+            {
+                result.flag = -1;
+                result.error = "cann't find the resource";
+            }
+            else
+            {
+                tc.Author = resource.Author;
+                tc.Brief = resource.Brief;
+                tc.Content = resource.Content;
+                tc.CreateDate = DateTime.Now;
+                tc.GroupID = resource.GroupID;
+                tc.GroupUID = resource.GroupUID;
+                tc.ParentUID = resource.ParentUID;
+                tc.ResourceType = resource.Type;
+                tc.Source = resource.Source;
+                tc.Status = resource.Status;
+                tc.SubTitle = resource.SubTitle;
+                tc.Title = resource.Title;
+
+                data.SubmitChanges();
+            }
+
+            string output = JsonConvert.SerializeObject(result);
+            return output;
+        }
+
+        [WebMethod]
+        public string DeleteResource(int ID)
+        {
+            string strSQL = "Delete t_Resource Where ID=" + ID;
+            data.ExecuteCommand(strSQL);
+
+            clsResult result = new clsResult();
+            string output = JsonConvert.SerializeObject(result);
             return output;
         }
 

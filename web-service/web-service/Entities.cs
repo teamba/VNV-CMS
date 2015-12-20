@@ -161,4 +161,94 @@ namespace web_service
 
         ~clsGroupEx() { }
     }
+
+    public class clsResource
+    {
+        public int ID { get; set; }
+        public int GroupID { get; set; }
+        public int Type { get; set; }
+        public string Title { get; set; }
+        public string CreateDate { get; set; }
+
+        public clsResource()
+        {
+            ID = 0;
+            GroupID = 0;
+            Type = 1;
+            Title = "";
+            CreateDate = "";
+        }
+
+        ~clsResource()
+        {
+        }
+    }
+
+    public class clsResourceSet : CollectionBase
+    {
+        ~clsResourceSet()
+        {
+            List.Clear();
+        }
+
+        public clsResource this[int index]
+        {
+            get
+            {
+                if (index >= 0 && index < List.Count) return (clsResource)List[index];
+                else return null;
+            }
+
+            set
+            {
+                if (index >= 0 && index < List.Count) List[index] = value;
+            }
+        }
+
+        public void Add(clsResource resource)
+        {
+            List.Add(resource);
+        }
+    }
+
+    public class clsResourceEx
+    {
+        public int ID { get; set; }
+        public int GroupID { get; set; }
+        public int Type { get; set; }
+        public string Title { get; set; }
+        public string SubTitle { get; set; }
+        public string Author { get; set; }
+        public string Source { get; set; }
+        public string Brief { get; set; }
+        public int Status { get; set; }
+        public DateTime CreateDate { get; set; }
+        public string Content { get; set; }
+        public string UID { get; set; }
+        public string ParentUID { get; set; }
+        public string GroupUID { get; set; }
+
+        public clsResourceEx()
+        {
+            ID = 0;
+            GroupID = 0;
+            Type = 1;
+            Title = "";
+            CreateDate = DateTime.Now;
+
+            SubTitle = "";
+            Author = "";
+            Source = "";
+            Brief = "";
+            Status = 0;
+            Content = "";
+            UID = "";
+            ParentUID = "";
+            GroupUID = "";
+        }
+
+        ~clsResourceEx()
+        {
+        }
+    }
 }
