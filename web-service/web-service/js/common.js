@@ -191,7 +191,7 @@ function jump(url) {
 
             case "columnSet.html":
                 init_columnSet();
-                
+
                 break;
 
             case "dealer.html":
@@ -204,6 +204,7 @@ function jump(url) {
                 break;
 
             case "photo.html":
+                init_photo();
                 break;
 
             case "product.html":
