@@ -461,56 +461,37 @@ function create_article_node(group, groups, parent) {
 }
 
 function init_article() {
-    $.ajax({
-        type: "POST",
-        contentType: "application/json",
-        url: "../vnv.asmx/GetGroupAll",
-        data: "{Type:1}", // 
-        dataType: 'json',
-        success: function (result) {
-            var groups = eval('(' + result.d + ')');
-
-            var i;
-            var root = $('#article_tree').tree('getRoot');
-            for (i = 0; i < groups.items.length; i++) {
-                if (groups.items[i].ParentID == 0) create_article_node(groups.items[i], groups.items, root);
-            }
-        }
-    });
-
-    // init group property
- /*  var row = {
-        name: 'Group Name',
-        value: '',
-        group: 'Basic',
-        editor: 'text'
-    };
-    $('#pg_group').propertygrid('appendRow', row);
-    row = {
-        name: 'Group Code',
-        value: '',
-        group: 'Basic',
-        editor: 'text'
-    };
-    $('#pg_group').propertygrid('appendRow', row);
-    row = {
-        name: 'Group ID',
-        value: '',
-        group: 'Basic',
-        editor: 'text'
-    };
-    $('#pg_group').propertygrid('appendRow', row);
-    row = {
-        name: 'Brief(Memo)',
-        value: '',
-        group: 'Basic',
-        editor: 'text'
-    };
-    $('#pg_group').propertygrid('appendRow', row);
-    $('#pg_group').propertygrid({
-        showHeader: false
-    });
-    */
+	if (g_php) {
+		$.post("/group/get_all", {Type:1}, function(data) {
+			//alert(data);
+			var groups = eval('(' + data + ')');
+				var i;
+				var root = $('#article_tree').tree('getRoot');
+				for (i = 0; i < groups.items.length; i++) {
+					if (groups.items[i].ParentID == 0) create_article_node(groups.items[i], groups.items, root);
+				}		
+		});
+	}
+	else {
+		$.ajax({
+			type: "POST",
+			contentType: "application/json",
+			url: "../vnv.asmx/GetGroupAll",
+			data: "{Type:1}", // 
+			dataType: 'json',
+			success: function (result) {      
+				var groups = eval('(' + result.d + ')');
+	
+				var i;
+				var root = $('#article_tree').tree('getRoot');
+				for (i = 0; i < groups.items.length; i++) {
+					if (groups.items[i].ParentID == 0) create_article_node(groups.items[i], groups.items, root);
+				}
+				
+			}
+		});		
+	}
+	
     $('#article_tree').tree({
         onClick: function (node) {
             if (node.id) {

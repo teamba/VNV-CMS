@@ -1,4 +1,5 @@
-﻿var g_Load = '<span align="center"><img src="/BackEnd/images/loading.gif" /></span>';
+﻿var g_php = 1; // 1 -- using PHP, 0 -- using .net
+var g_Load = '<span align="center"><img src="/BackEnd/images/loading.gif" /></span>';
 var m_login = '../user/login';
 
 function PageLoad(pageID) {
