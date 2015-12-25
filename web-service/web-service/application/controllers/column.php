@@ -3,6 +3,7 @@
 class column extends CI_Controller {
 	function customError($errno, $errstr)
  	{ 
+ 		error_log("[$errno] $errstr",0);
  		echo "<b>Error:</b> [$errno] $errstr";
  	}
 
@@ -17,6 +18,24 @@ class column extends CI_Controller {
 	{
 		echo "column API test!";
 		//$this->load->view('welcome_message');
+		header('Content-type: application/json');
+
+		$strColumnEx = '{ "Name": "new column", "Code": "new-column", "Brief":"", "CreateDate":"2015-12-12" }';
+		$column = json_decode($strColumnEx);
+		 
+		$column->ParentID = 1;
+/*
+		$this->load->helper('date');
+			 
+		$datestring = "%y-%m-%d %h:%i:%a";
+		$time = time();
+		$createdate = mdate($datestring, $time);
+		$column->CreateDate = $createdate;
+*/		
+		$this->db->insert('t_Column', $column);
+		$ret['flag'] = $this->db->insert_id(); 
+
+		echo json_encode($ret);				
 	}	
 
 	function getparam($name)
@@ -195,5 +214,115 @@ class column extends CI_Controller {
 		}
 
 		echo json_encode($ret);	
+	}
+
+	function get_all()
+	{
+		header('Content-type: application/json');
+
+		$result['flag'] = 0;
+		$result['error'] = "";		
+
+		$query = $this->db->get('t_Column');
+		$counter = 0;
+		foreach ($query->result() as $row)
+		{
+			$columns[$counter]['ID'] = $row->ID;
+			$columns[$counter]['Name'] = $row->Name;
+			$columns[$counter]['ParentID'] = $row->ParentID;
+			
+			$counter = $counter + 1;
+		}
+
+		$result['flag'] = $counter;	
+		$result['items'] = $columns;
+
+		echo json_encode($result);		
+	}
+
+	function get() {
+		header('Content-type: application/json');
+
+		$id = $this->getparam('id');
+
+		$ret['flag'] = 0;
+		$ret['error'] = "";		
+
+		if ($id==null || $id == "")
+		{
+			$ret['flag'] = -1;
+			$ret['error'] = "Please input the column id.";
+		}
+		else
+		{
+			$this->db->limit(1);
+			$this->db->where('ID', $id);
+			$data = $this->db->get('t_Column')->row();
+
+			if ($data)
+			{
+				$ret['flag'] = 1;
+				$ret['items'] = $data;
+			}
+			else
+			{
+				$ret['flag'] = -1;
+				$ret['error'] = "cann't found the column.";
+			}
+		}
+		echo json_encode($ret);	
+	}
+
+	function add() {
+		//error_log("enter column add", 0);
+		header('Content-type: application/json');
+
+		$parentid = $this->getparam("parentID");
+		$strGroupEx = $this->getparam("strGroupEx");
+		
+		$ret['flag'] = 0;
+		$ret['error'] = "";
+		if ($parentid == null || $strColumnEx==null)
+		{
+			$ret['flag'] = -1;
+			$ret['error'] = "Please input the parent id and column info";
+			echo json_encode($ret);
+			return;
+		}
+
+		$column = json_decode($strColumnEx);
+		 
+		if ($parentid == '') $parentid = "0";
+		$column->ParentID = $parentid;
+/*
+		$this->load->helper('date');
+			 
+		$datestring = "%y-%m-%d %h:%i:%a";
+		$time = time();
+		$createdate = mdate($datestring, $time);
+		$column->CreateDate = $createdate;
+	*/	
+		$this->db->insert('t_Column', $column);
+		$ret['flag'] = $this->db->insert_id(); 
+		//error_log("finish column add.", 0); 
+		echo json_encode($ret);			
+	}
+
+	function update() {
+		header('Content-type: application/json');
+
+		$result['flag'] = 0;
+		$result['error'] = "";	
+
+		echo json_encode($result);	
+	}
+
+	function delete() {
+		header('Content-type: application/json');
+
+		$result['flag'] = 0;
+		$result['error'] = "";		
+
+		echo json_encode($result);		
 	}
 }

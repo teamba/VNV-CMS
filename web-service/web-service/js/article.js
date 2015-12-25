@@ -82,29 +82,58 @@ function get_article_property() {
    current_article.Brief = $("#txt_brief").val();
 }
 
+function delete_article_run(res) {
+    if (res.flag < 0) {
+        // error
+        //console.log("delete_article: error");
+    }
+    else {
+        current_article = null;
+        $('#dg').datagrid('deleteRow', current_index);
+        CKEDITOR.instances.editor01.setData("");
+    }
+}
+
 function delete_article() {
     if (current_article == null) return;
 
-    $.ajax({
-        type: "POST",
-        contentType: "application/json",
-        url: "../vnv.asmx/DeleteResource",
-        data: "{ID:" + current_article.ID + "}", // {parentID:0}
-        dataType: 'json',
-        success: function (result) {
-            var res = eval('(' + result.d + ')');
+    if (g_php) {
+       $.post("/resource/delete", {id:current_article.ID}, function(data) {
+            delete_article_run(data);
+        });
+    }
+    else {
+        $.ajax({
+            type: "POST",
+            contentType: "application/json",
+            url: "../vnv.asmx/DeleteResource",
+            data: "{ID:" + current_article.ID + "}", // {parentID:0}
+            dataType: 'json',
+            success: function (result) {
+                var res = eval('(' + result.d + ')');
+                delete_article_run(res);
+            }
+        });        
+    }
 
-            if (res.flag < 0) {
-                // error
-                //console.log("delete_article: error");
-            }
-            else {
-                current_article = null;
-                $('#dg').datagrid('deleteRow', current_index);
-                CKEDITOR.instances.editor01.setData("");
-            }
-        }
-    });
+}
+
+function add_article_run(res) {
+    if (res.flag < 0) {
+        // error
+        //console.log("update_column: error");
+    }
+    else {
+        current_article.ID = res.flag;
+        $('#dg').datagrid('appendRow', {
+            id: current_article.ID,
+            title: current_article.Title,
+            date: current_article.CreateDate
+        });
+
+        var rows = $('#dg').datagrid('getRows');
+        current_index = rows.length-1;
+    }
 }
 
 function add_article() {
@@ -136,32 +165,25 @@ function add_article() {
 
     var str = JSON.stringify(current_article);
     //console.log(str);
-    $.ajax({
-        type: "POST",
-        contentType: "application/json",
-        url: "../vnv.asmx/AddResource",
-        data: "{groupID:" + current_group.ID + ",strResourceEx:'" + str + "',content:'" + content + "'}", // {parentID:0}
-        dataType: 'json',
-        success: function (result) {
-            var res = eval('(' + result.d + ')');
-
-            if (res.flag < 0) {
-                // error
-                //console.log("update_column: error");
+    if (g_php) {
+       $.post("/resource/add", {strResourceEx:str, content:content, groupID:current_group.ID}, function(data) {
+            add_article_run(data);
+        });
+    }
+    else {
+         $.ajax({
+            type: "POST",
+            contentType: "application/json",
+            url: "../vnv.asmx/AddResource",
+            data: "{groupID:" + current_group.ID + ",strResourceEx:'" + str + "',content:'" + content + "'}", // {parentID:0}
+            dataType: 'json',
+            success: function (result) {
+                var res = eval('(' + result.d + ')');
+                add_article_run(res);
             }
-            else {
-                current_article.ID = res.flag;
-                $('#dg').datagrid('appendRow', {
-                    id: current_article.ID,
-                    title: current_article.Title,
-                    date: current_article.CreateDate
-                });
+        });       
+    }
 
-                var rows = $('#dg').datagrid('getRows');
-                current_index = rows.length-1;
-            }
-        }
-    });
 }
 
 function save_article() {
@@ -177,77 +199,112 @@ function save_article() {
 
     var str = JSON.stringify(current_article);
     //console.log(str);
-    $.ajax({
-        type: "POST",
-        contentType: "application/json",
-        url: "../vnv.asmx/UpdateResource",
-        data: "{strResourceEx:'" + str + "',content:'"+content +"'}", // {parentID:0}
-        dataType: 'json',
-        success: function (result) {
-            var result = eval('(' + result.d + ')');
+    if (g_php) {
+       $.post("/resource/update", {strResourceEx:str, content:content}, function(data) {
+            
+        });
+    }
+    else {
+        $.ajax({
+            type: "POST",
+            contentType: "application/json",
+            url: "../vnv.asmx/UpdateResource",
+            data: "{strResourceEx:'" + str + "',content:'"+content +"'}", // {parentID:0}
+            dataType: 'json',
+            success: function (result) {
+                var result = eval('(' + result.d + ')');
 
-            if (result.flag < 0) {
-                // error
-                //console.log("update_column: error");
-            }
-            else {
+                if (result.flag < 0) {
+                    // error
+                    //console.log("update_column: error");
+                }
+                else {
 
+                }
             }
-        }
-    });
+        });        
+    }
+
+}
+
+function load_article_run (result) {
+    if (result.flag < 0) {
+        // error
+        //console.log("delete_group: error");
+    }
+    else {
+        //alert(res.items.Title);
+        CKEDITOR.instances.editor01.setData(result.items.Content);
+        current_article = result.items;
+
+        show_article_property();
+    }
 }
 
 function load_article(articleID) {
-    $.ajax({
-        type: "POST",
-        contentType: "application/json",
-        url: "../vnv.asmx/GetResourceEx",
-        data: "{ID:" + articleID + "}", // {parentID:0}
-        dataType: 'json',
-        success: function (result) {
-            var res = eval('(' + result.d + ')');
-
-            if (res.flag < 0) {
-                // error
-                //console.log("delete_group: error");
+    if (g_php) {
+        $.post("/resource/get_ex", {id:articleID}, function(data) {
+            load_article_run(data);
+        });
+    }
+    else {
+         $.ajax({
+            type: "POST",
+            contentType: "application/json",
+            url: "../vnv.asmx/GetResourceEx",
+            data: "{ID:" + articleID + "}", // {parentID:0}
+            dataType: 'json',
+            success: function (result) {
+                var res = eval('(' + result.d + ')');
+                load_article_run(res);
             }
-            else {
-                //alert(res.items.Title);
-                CKEDITOR.instances.editor01.setData(res.items.Content);
-                current_article = res.items;
+        });       
+    }
 
-                show_article_property();
-            }
-        }
-    });
+}
+
+function delete_group_run(group_id, result) {
+    if (result.flag < 0) {
+        // error
+        //console.log("delete_group: error");
+    }
+    else {
+        var node = $('#article_tree').tree('find', group_id);
+
+        $('#article_tree').tree('remove', node.target);
+
+        show_group_property("Group ID", "");
+        show_group_property("Group Name", "");
+        show_group_property("Group Code", "");
+        show_group_property("Brief", "");
+    }
 }
 
 function delete_group(group_id) {
-    $.ajax({
-        type: "POST",
-        contentType: "application/json",
-        url: "../vnv.asmx/DeleteGroup",
-        data: "{groupID:" + group_id + "}", // {parentID:0}
-        dataType: 'json',
-        success: function (result) {
-            var result = eval('(' + result.d + ')');
-
-            if (result.flag < 0) {
-                // error
-                //console.log("delete_group: error");
-            }
+    if (g_php) {
+        $.post("/group/delete", {groupID:group_id}, function(data) {
+            if (data.flag<0)  {
+                alert(data.error);
+            }  
             else {
-                var node = $('#article_tree').tree('find', group_id);
-
-                $('#article_tree').tree('remove', node.target);
-
-                show_group_property("Group ID", "");
-                show_group_property("Group Name", "");
-                show_group_property("Group Code", "");
-                show_group_property("Brief", "");
+                delete_group_run(group_id, data);
             }
-        }
-    });
+        });
+    }
+    else {
+        $.ajax({
+            type: "POST",
+            contentType: "application/json",
+            url: "../vnv.asmx/DeleteGroup",
+            data: "{groupID:" + group_id + "}", // {parentID:0}
+            dataType: 'json',
+            success: function (result) {
+                var result = eval('(' + result.d + ')');
+
+                delete_group_run(group_id, result);
+            }
+        });
+    }
 }
 
 function update_group() {
@@ -278,25 +335,64 @@ function update_group() {
     }
 
     var str = JSON.stringify(group);
-    //console.log(str);
-    $.ajax({
-        type: "POST",
-        contentType: "application/json",
-        url: "../vnv.asmx/UpdateGroup",
-        data: "{strGroupEx:'" + str + "'}", // {parentID:0}
-        dataType: 'json',
-        success: function (result) {
-            var result = eval('(' + result.d + ')');
-
-            if (result.flag < 0) {
-                // error
-                //console.log("update_column: error");
-            }
+    if (g_php == 1)
+    {
+        $.post("/group/update", {strGroupEx:str}, function(data) {
+            //alert(data);
+            //var result = eval('(' + data + ')');
+            if (data.flag<0)  {
+                alert(data.error);
+            }  
             else {
-
+                //alert("update success!");
             }
-        }
-    });
+        });
+    }
+    else 
+    {
+        $.ajax({
+            type: "POST",
+            contentType: "application/json",
+            url: "../vnv.asmx/UpdateGroup",
+            data: "{strGroupEx:'" + str + "'}", // {parentID:0}
+            dataType: 'json',
+            success: function (result) {
+                var result = eval('(' + result.d + ')');
+
+                if (result.flag < 0) {
+                    // error
+                    //console.log("update_column: error");
+                }
+                else {
+
+                }
+            }
+        });        
+    }
+
+}
+
+function add_group_run(parent_id, result, group) {
+    if (result.flag < 0) {
+        // error
+        //console.log("add_group: error");
+    }
+    else {
+        var parent_node;
+        if (parent_id == 0) parent_node = $("#article_tree").tree("getRoot");
+        else parent_node = $('#article_tree').tree('find', parent_id);
+
+        $('#article_tree').tree('append', {
+            parent: parent_node.target,
+            data: {
+                id: result.flag,
+                text: group.Name
+            }
+        });
+
+        //$("#txt_column_id").val(result.flag);
+        show_group_property("Group ID", result.flag);
+    }
 }
 
 function add_group(parent_id) {
@@ -323,37 +419,27 @@ function add_group(parent_id) {
     }
 
     var str = JSON.stringify(group);
-    $.ajax({
-        type: "POST",
-        contentType: "application/json",
-        url: "../vnv.asmx/AddGroup",
-        data: "{parentID:" + parent_id + ",strGroupEx:'" + str + "'}", // {parentID:0}
-        dataType: 'json',
-        success: function (result) {
-            var result = eval('(' + result.d + ')');
-
-            if (result.flag < 0) {
-                // error
-                //console.log("add_group: error");
+    if (g_php) {
+        $.post("/group/add", {parentid:parent_id, strGroupEx:str}, function(data) {
+            //alert(data);
+            //var result = eval('(' + data + ')');
+            add_group_run(parent_id, data, group);
+        });
+    }
+    else {
+        $.ajax({
+            type: "POST",
+            contentType: "application/json",
+            url: "../vnv.asmx/AddGroup",
+            data: "{parentID:" + parent_id + ",strGroupEx:'" + str + "'}", // {parentID:0}
+            dataType: 'json',
+            success: function (result) {
+                var result = eval('(' + result.d + ')');
+                add_group_run(parent_id, result, group);
             }
-            else {
-                var parent_node;
-                if (parent_id == 0) parent_node = $("#article_tree").tree("getRoot");
-                else parent_node = $('#article_tree').tree('find', parent_id);
+        });
+    }
 
-                $('#article_tree').tree('append', {
-                    parent: parent_node.target,
-                    data: {
-                        id: result.flag,
-                        text: group.Name
-                    }
-                });
-
-                //$("#txt_column_id").val(result.flag);
-                show_group_property("Group ID", result.flag);
-            }
-        }
-    });
 }
 
 function show_group_property(name, value) {
@@ -362,6 +448,22 @@ function show_group_property(name, value) {
         if (rows[i].name == name) {
             rows[i].value = value;
             break;
+        }
+    }
+}
+
+function show_resource_list_run(res) {
+    if (res.flag <= 0) {
+
+    }
+    else {
+        //alert("resource num:"+res.flag);
+        for (var i = 0; i < res.items.length; i++) {
+            $('#dg').datagrid('appendRow', {
+                id: res.items[i].ID,
+                title: res.items[i].Title,
+                date: res.items[i].CreateDate
+            });
         }
     }
 }
@@ -375,73 +477,91 @@ function show_resource_list(groupID) {
         for (i = 0; i < n; i++) $('#dg').datagrid('deleteRow',0);
     }
 
-    $.ajax({
-        type: "POST",
-        contentType: "application/json",
-        url: "../vnv.asmx/GetResources",
-        data: "{groupID:" + groupID + "}", // {parentID:0}
-        dataType: 'json',
-        success: function (result) {
-            var res = eval('(' + result.d + ')');
-            if (res.flag <= 0) {
+    if (g_php) {
+        $.post("/resource/get_list", {groupid:groupID}, function(data) {
+            //var res = eval('(' + data + ')');
+            show_resource_list_run(data);
+        });
+    }
+    else {
+        $.ajax({
+            type: "POST",
+            contentType: "application/json",
+            url: "../vnv.asmx/GetResources",
+            data: "{groupID:" + groupID + "}", // {parentID:0}
+            dataType: 'json',
+            success: function (result) {
+                var res = eval('(' + result.d + ')');
+                show_resource_list_run(res);
+            }
+        });       
+    }
 
-            }
-            else {
-                //alert("resource num:"+res.flag);
-                for (var i = 0; i < res.items.length; i++) {
-                    $('#dg').datagrid('appendRow', {
-                        id: res.items[i].ID,
-                        title: res.items[i].Title,
-                        date: res.items[i].CreateDate
-                    });
-                }
-            }
+}
+
+function show_group_run(group) {
+    var rows = $('#pg_group').propertygrid('getRows'); // getChanges
+    for (var i = 0; i < rows.length; i++) {
+        switch (rows[i].name) {
+            case "Group Name":
+                rows[i].value = group.items.Name;
+                break;
+
+            case "Group Code":
+                rows[i].value = group.items.Code;
+                break;
+
+            case "Group ID":
+                rows[i].value = group.items.ID;
+                break;
+
+            case "Brief":
+                rows[i].value = group.items.Brief;
+                break;
+
+            default:
+                break;
         }
-    });
+    }
 }
 
 function show_group(groupID) {
-    $.ajax({
-        type: "POST",
-        contentType: "application/json",
-        url: "../vnv.asmx/GetGroupEx",
-        data: "{groupID:" + groupID + "}", // {parentID:0}
-        dataType: 'json',
-        success: function (result) {
-            var group = eval('(' + result.d + ')');
-            if (group.flag < 0) {
-                // error
-                //console.log("show_column: error");
-            }
+    if (g_php==1) {
+        $.post("/group/get", {id:groupID}, function(data) {
+            //alert(data);
+            var result = data;//eval('(' + data + ')');
+            if (result.flag<0)  {
+
+            }  
             else {
-                current_group = group.items;
+                current_group = result.items;
+                show_group_run(result);
+            }
+        });
+    }
+    else {
+        $.ajax({
+            type: "POST",
+            contentType: "application/json",
+            url: "../vnv.asmx/GetGroupEx",
+            data: "{groupID:" + groupID + "}", // {parentID:0}
+            dataType: 'json',
+            success: function (result) {
+                var group = eval('(' + result.d + ')');
+                if (group.flag < 0) {
+                    // error
+                    //console.log("show_column: error");
+                }
+                else {
+                    current_group = group.items;
 
-                var rows = $('#pg_group').propertygrid('getRows'); // getChanges
-                for (var i = 0; i < rows.length; i++) {
-                    switch (rows[i].name) {
-                        case "Group Name":
-                            rows[i].value = group.items.Name;
-                            break;
-
-                        case "Group Code":
-                            rows[i].value = group.items.Code;
-                            break;
-
-                        case "Group ID":
-                            rows[i].value = group.items.ID;
-                            break;
-
-                        case "Brief":
-                            rows[i].value = group.items.Brief;
-                            break;
-
-                        default:
-                            break;
-                    }
+                    show_group_run(group);    
                 }
             }
-        }
-    });
+            
+        });        
+    }
+
 }
 
 function create_article_node(group, groups, parent) {
@@ -464,7 +584,7 @@ function init_article() {
 	if (g_php) {
 		$.post("/group/get_all", {Type:1}, function(data) {
 			//alert(data);
-			var groups = eval('(' + data + ')');
+			var groups = data ; //eval('(' + data + ')');
 				var i;
 				var root = $('#article_tree').tree('getRoot');
 				for (i = 0; i < groups.items.length; i++) {

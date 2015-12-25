@@ -4,6 +4,7 @@ date_default_timezone_set("PRC");
 class group extends CI_Controller {
 	function customError($errno, $errstr)
  	{ 
+ 		error_log("[$errno] $errstr",0);
  		echo "<b>Error:</b> [$errno] $errstr";
  	}
 
@@ -17,7 +18,26 @@ class group extends CI_Controller {
 	public function test()
 	{
 		echo "group API test!";
+		//error_log("group API test!\r\n",0);
 		//$this->load->view('welcome_message');
+
+		//"Code":"myCode",
+	/*	$data='{"ParentID":"1","Name":"my Group","Code":"myCode","Brief":"the Brief","Type":"1","CreateDate":"2015-12-12 10:10:10","UID":"","ParentUID":""}'; 
+
+		$group = json_decode($data);
+		$group->ParentID = 1;
+		echo $group->Name; 
+		$this->load->helper('date');
+			 
+		$datestring = "%y-%m-%d %h:%i:%a";
+		$time = time();
+		$createdate = mdate($datestring, $time);
+		//$group->CreateDate =  "2015-12-12"; // $createdate;
+		
+		$this->db->insert('t_Group', $group);
+		$id = $this->db->insert_id(); 
+
+		echo "insert success, id:".$id; */
 	}	
 
 	function getparam($name)
@@ -77,79 +97,11 @@ class group extends CI_Controller {
 
 		return $groups;
 	}
-
-	// modify a group: input -- id, name, brief
-	function modify()
-	{
-		header('Content-type: application/json');
-
-		$id = $this->getparam('id');
-		$name = $this->getparam('name');
-		$brief = $this->getparam('brief');
-
-		if ($id=="" || $name=="")
-		{
-			$ret['ok'] = 0;
-			$ret['msg'] = "Please input the ID and Name!"; 
-		}
-		else
-		{
-			$data = array(
-				'Name' => $name,
-				'Brief' => $brief
-				);
-
-			$this->db->where('ID', $id);
-			$this->db->update('t_Group', $data);
-
-			$ret['ok'] = 1;
-		}
-
-		echo json_encode($ret);	
-	}
-
-	// delete a group: id
-	function delete()
-	{
-		header('Content-type: application/json');
-
-		$ret['ok'] = 0;
-		$id = $this->getparam('id');
-		if ($id == '')
-		{
-			$ret['msg'] = "Please input the group id.";
-		}
-		else
-		{
-			$this->db->where("ParentID", $id);
-			$this->db->from("t_Group");
-			$sum = $this->db->count_all_results();
-
-			// not child group
-			if ($sum > 0) {$ret['msg'] = "Sub group exist.";}
-			else
-			{
-				$this->db->where("GroupID", $id);
-				$this->db->from("t_Resource");
-				$sum = $this->db->count_all_results();
-				// not resource
-				if ($sum>0) $ret['msg'] = "Resource exist in this group.";
-				else
-				{
-					$this->db->where("ID", $id);
-					$this->db->delete("t_Group");
-
-					$ret['ok'] = 1;
-				}
-			}
-		}
-		
-		echo json_encode($ret);
-	}
 	
 	/* new version code, added in 2015.12.22 */
 	function get_all()
 	{
+		header('Content-type: application/json');
 		//echo "enter get_all";
 		$type = $this->getparam('Type');
 		
@@ -198,7 +150,7 @@ class group extends CI_Controller {
 		if ($id==null || $id == "")
 		{
 			$ret['ok'] = -1;
-			$ret['msg'] = "Please input the group id.";
+			$ret['error'] = "Please input the group id.";
 		}
 		else
 		{
@@ -215,8 +167,9 @@ class group extends CI_Controller {
 				$group['Brief'] = $data->Brief;
 				$group['ParentID'] = $data->ParentID;
 				$group['Type'] = $data->Type;
+				$group['Code']= $data->Code;
 
-				$ret['items'] = $group;
+				$ret['items'] = $data;// $group;
 			}
 			else
 			{
@@ -242,37 +195,100 @@ class group extends CI_Controller {
 		$parentid = $this->getparam("parentid");
 		$strGroupEx = $this->getparam("strGroupEx");
 		
-		$ret['flash'] = 0;
+		$ret['flag'] = 0;
 		$ret['error'] = "";
 		if ($parentid == null || $strGroupEx==null)
 		{
-			$ret['flash'] = -1;
+			$ret['flag'] = -1;
 			$ret['error'] = "Please input the parent id and group info";
 			echo json_encode($ret);
 			return;
 		}
-		
+		//error_log("enter add:".$strGroupEx."\r\n", 0);
 		$group = json_decode($strGroupEx);
-
+		 
 		if ($parentid == '') $parentid = "0";
+		$group->ParentID = $parentid;
 
 		$this->load->helper('date');
+			 
+		//$datestring = "%y-%m-%d %h:%i:%a";
+		//$time = time();
+		//$createdate = mdate($datestring, $time);
 
-		$datestring = "%y-%m-%d %h:%i:%a";
-		$time = time();
-		$createdate = mdate($datestring, $time);
+		//$data['Code'] = $group->Code;  // Attention: !!!!!
 		
-		$data['ParentID'] = $parentid;
-		$data['Name'] = $group->Name;
-		$data['Brief'] = $group->Brief;
-		$data['CreateDate'] = $createdate;
-		$data['Type'] = $group->Type;
-		$data['Code'] = $group->Code
-		$this->db->insert('t_Group', $data);
+		$this->db->insert('t_Group', $group);
+		$ret['flag'] = $this->db->insert_id(); 
+		 
+		echo json_encode($ret);			
+	}
 
-		$ret['flag'] = $this->db->insert_id();
+	// update a group: input -- group object
+	function update()
+	{
+		header('Content-type: application/json');
+		//error_log("enter update\r\n",0);
+		
+		$strGroupEx = $this->getparam('strGroupEx');
+		
+		if ($strGroupEx==null|| $strGroupEx=="")
+		{
+			$ret['ok'] = 0;
+			$ret['error'] = "Please the group content!"; 
+		}
+		else
+		{
+			//error_log("group json string:".$strGroupEx."\r\n",0);
+			$group = json_decode($strGroupEx);
+			//error_log("group name: ".$group->Name."\r\n", 0);
+			$this->db->where('ID', $group->ID);
+			$this->db->update('t_Group', $group);
+
+			$ret['flag'] = 1;
+			$ret['error'] = "";
+		}
 
 		echo json_encode($ret);	
+	}
+
+	// delete a group: groupID
+	function delete()
+	{
+		header('Content-type: application/json');
+
+		$ret['flag'] = -1;
+		$ret['error'] = "";
+		$id = $this->getparam('groupID');
+		if ($id==null || $id == '')
+		{
+			$ret['error'] = "Please input the group id.";
+		}
+		else
+		{
+			$this->db->where("ParentID", $id);
+			$this->db->from("t_Group");
+			$sum = $this->db->count_all_results();
+
+			// not child group
+			if ($sum > 0) {$ret['error'] = "Sub group exist.";}
+			else
+			{
+				$this->db->where("GroupID", $id);
+				$this->db->from("t_Resource");
+				$sum = $this->db->count_all_results();
+				// not resource
+				if ($sum>0) $ret['error'] = "Resource exist in this group.";
+				else
+				{
+					$this->db->where("ID", $id);
+					$this->db->delete("t_Group");
+
+					$ret['flag'] = 0;
+				}
+			}
+		}
 		
+		echo json_encode($ret);
 	}
 }

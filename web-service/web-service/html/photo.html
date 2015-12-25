@@ -71,17 +71,17 @@
         <div id="tt" class="easyui-tabs" style="width:100%;height:272px;">
             <div title="分类编辑" style="padding:5px;">
 
-            <table id="pg" class="easyui-propertygrid" style="width:95%;height:200px"
+            <table id="pg_group" class="easyui-propertygrid" style="width:95%;height:200px"
                 data-options="
                 url:'../data/pg_group.json',
                 method:'get',
                 showGroup:true,scrollbarSize:0"></table>    
                  
             <div style="padding:5px 0;">
-                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'" style="width:100px">新增分类</a>
-                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'" style="width:100px">新增子分类</a>
-                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" style="width:100px">修 改</a>
-                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-cut'" style="width:100px">删 除</a>
+                <a id="btn_add_group" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'" style="width:100px">新增分类</a>
+                <a id="btn_add_subgroup" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'" style="width:100px">新增子分类</a>
+                <a id="btn_modify_group" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" style="width:100px">修 改</a>
+                <a id="btn_delete_group" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-cut'" style="width:100px">删 除</a>
             </div>
                     
             </div>
