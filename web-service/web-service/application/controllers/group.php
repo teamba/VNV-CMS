@@ -21,6 +21,7 @@ class group extends CI_Controller {
 		//error_log("group API test!\r\n",0);
 		//$this->load->view('welcome_message');
 
+		echo "session is ".$this->session->userdata('group_id');
 		//"Code":"myCode",
 	/*	$data='{"ParentID":"1","Name":"my Group","Code":"myCode","Brief":"the Brief","Type":"1","CreateDate":"2015-12-12 10:10:10","UID":"","ParentUID":""}'; 
 
@@ -142,6 +143,7 @@ class group extends CI_Controller {
 	function get() 
 	{
 		header('Content-type: application/json');
+		//$this->load->library('session');
 
 		$id = $this->getparam("id");
 		$ret['flag'] = 0;
@@ -170,11 +172,13 @@ class group extends CI_Controller {
 				$group['Code']= $data->Code;
 
 				$ret['items'] = $data;// $group;
+				$this->session->set_userdata('group_id', $data->ID);
 			}
 			else
 			{
 				$ret['flag'] = 0;
 				$ret['error'] = "cann't found the group.";
+				$this->session->set_userdata('group_id', 0);
 			}
 		}
 		echo json_encode($ret);	
