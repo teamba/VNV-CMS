@@ -251,4 +251,127 @@ namespace web_service
         {
         }
     }
+
+    public class clsColumnUpdate
+    {
+        public int ID { get; set; }
+        public int ColumnID { get; set; }
+        public int OwnerID { get; set; }
+        public DateTime CreateDate { get; set; }
+
+        /* 状态定义
+         * 0 -- 处于编辑状态，每个栏目只能有一个0
+         * 1 -- 处于已发布状态，每个栏目只能有一个1
+         * 2 -- 历史发布
+         * 
+         * 状态转换
+         * 0 --> 1 发布编辑状态的内容
+         * 0 --> 2 新增编辑内容，或者其它内容转为编辑状态
+         * 
+         * 1 --> 2 别的内容发布，原内容转为历史内容
+         * 1 --> 0 已经发布的内容重编辑，则新增正在编辑的内容，保留已经发布的内容，原0转为2
+         * 
+         * 2 --> 0 旧内容重新编辑，原0转为2
+         * 2 --> 1 旧内容重新发布，原1转为2
+         */
+        public int Status { get; set; }
+
+        public clsColumnUpdate()
+        {
+            ID = 0;
+            ColumnID = 0;
+            OwnerID = 0;
+            CreateDate = DateTime.Now;
+            Status = 0;
+        }
+
+        ~clsColumnUpdate()
+        {
+        }
+    }
+
+    public class clsColumnUpdateSet : CollectionBase
+    {
+        ~clsColumnUpdateSet()
+        {
+            List.Clear();
+        }
+
+        public clsColumnUpdate this[int index]
+        {
+            get
+            {
+                if (index >= 0 && index < List.Count) return (clsColumnUpdate)List[index];
+                else return null;
+            }
+
+            set
+            {
+                if (index >= 0 && index < List.Count) List[index] = value;
+            }
+        }
+
+        public void Add(clsColumnUpdate columnUpdate)
+        {
+            List.Add(columnUpdate);
+        }
+    }
+
+    public class clsUpdateItem
+    {
+        public int ID { get; set; }
+        public int UpdateID { get; set; }
+        public int ResourceID { get; set; }
+        public string Title { get; set; }
+        public int ListPoint { get; set; }
+        public string Brief { get; set; }
+
+        public clsUpdateItem()
+        {
+            ID = 0;
+            UpdateID = 0;
+            ResourceID = 0;
+            Title = "";
+            ListPoint = 0;
+            Brief = "";
+        }
+
+        ~clsUpdateItem()
+        {
+        }
+    }
+
+    public class clsUpdateItemSet : CollectionBase
+    {
+        ~clsUpdateItemSet()
+        {
+            List.Clear();
+        }
+
+        public clsUpdateItem this[int index]
+        {
+            get
+            {
+                if (index >= 0 && index < List.Count) return (clsUpdateItem)List[index];
+                else return null;
+            }
+
+            set
+            {
+                if (index >= 0 && index < List.Count) List[index] = value;
+            }
+        }
+
+        public void Add(clsUpdateItem updateItem)
+        {
+            List.Add(updateItem);
+        }
+
+        public bool Exist(int resourceID)
+        {
+            for (int i = 0; i < List.Count; i++) if (this[i].ResourceID == resourceID) return true;
+
+            return false;
+        }
+    }
 }

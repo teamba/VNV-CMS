@@ -1,4 +1,4 @@
-﻿var g_php = 1; // 1 -- using PHP, 0 -- using .net
+﻿var g_php = 0; // 1 -- using PHP, 0 -- using .net
 var g_Load = '<span align="center"><img src="/BackEnd/images/loading.gif" /></span>';
 var m_login = '../user/login';
 
@@ -188,11 +188,11 @@ function jump(url) {
                 break;
 
             case "columnRelease.html":
+                init_column();
                 break;
 
             case "columnSet.html":
                 init_columnSet();
-
                 break;
 
             case "dealer.html":

@@ -14,6 +14,8 @@
 <script src="../js/menu.js" type="text/javascript"></script>
 
 <script src="../js/main.js" type="text/javascript"></script>
+
+<script src="../js/column.js" type="text/javascript"></script> 
 <script src="../js/common.js" type="text/javascript"></script> 
 
 <title>英加联系统后台管理</title>
@@ -23,6 +25,7 @@
 <script language="javascript" >
     $(document).ready(function () {
         init_page();
+        init_column();
     });
 
 </script>
@@ -41,144 +44,154 @@
  
   <div id="div_right_content" class="right">
  
-    <div class="con1">
+    <div class="div_content_list">
 
-     <div class="topnav">
+     <div id="div_topnav" class="topnav">
       <p>栏目发布</p>
     </div>
 
-      <div class="con1Left">
-        <div class="jsFljg">
-          <p>栏目-素材结构图</p>
+      <div class="con3Left">
+        <div id="div1" class="easyui-tabs" style="width:100%;height:272px;">
+        <div title="栏目内容" style="padding:5px;">
+          <div id="div_column_tree" class="easyui-panel" style="padding:5px; width:100%; height:100%;"> 
+            <ul id="column_tree" class="easyui-tree" 
+            data-options="animate:true,dnd:true, checkbox:true,
+                        onContextMenu: function(e,node){
+                            e.preventDefault();
+                            $(this).tree('select',node.target);
+                            $('#mm').menu('show',{
+                                left: e.pageX,
+                                top: e.pageY
+                            });
+                        }
+            "> 
+			<li>
+				<span id="li_root_column">所有栏目</span> 
+			</li> 
+            </ul> 
+          </div>  
+            <div id="mm" class="easyui-menu" style="width:240px;">
+                <div onclick="save_current_column()" data-options="iconCls:'icon-add'">保存当前栏目内容</div>
+                <div onclick="save_checked_columns()" data-options="iconCls:'icon-add'">保存打勾栏目内容</div>
+                <div class="menu-sep"></div>
+                <div onclick="clear_current_resource()" data-options="iconCls:'icon-remove'">清除当前一条内容</div>
+                <div onclick="clear_current_column()" data-options="iconCls:'icon-clear'">清除当前栏目内容</div>
+                <div class="menu-sep"></div>
+                <div onclick="reload_current_column()" data-options="iconCls:'icon-reload'">刷新当前栏目内容</div>
+                <div class="menu-sep"></div>
+                <div onclick="preview_current_column()" >预览当前栏目</div>
+                <div onclick="publish_current_column()" >发布当前栏目</div>
+                <div onclick="publish_checked_columns()" >发布打勾栏目</div>
+            </div>
+
         </div>
-        <div class="jsFljgCon" > 
-          <div id="jstree"> 
-          <!-- in this example the tree is populated from inline HTML -->
-            <!--
-            <ul>
-              <li>分类1 
-                <ul>
-                  <li id="child_node_1">子分类 1</li>
-                  <li>子分类 2</li>
-                </ul>
-              </li>
-              <li>分类 2</li>
-            </ul> -->
-          </div>    <!-- end of jstree -->      
         </div>
       </div>
   
-      <div class="con1Right">
-        <div class="jsFljg">
-          <p>栏目内容</p>
+      <div class="con3Right">
+        <div id="div_column_option" class="easyui-tabs" style="width:100%;height:272px;">
+            <div title="清单" style="padding:2px;">
+                <table id="dg_update" class="easyui-datagrid" title="发布历史清单" style="width:100%;height:100%"
+                        data-options="singleSelect:true,collapsible:true">
+                    <thead>
+                        <tr>
+                            <th data-options="field:'id',width:40">ID</th>
+                            <th data-options="field:'createdate'">生成日期</th>
+                            <th data-options="field:'status',width:40,align:'center'">状态</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+
+            <div title="排序"  style="overflow:auto;padding:2px;">
+                <table id="pg_update_item_sort" class="easyui-propertygrid" style="width:100%" data-options="
+                            showGroup:false,
+                            scrollbarSize:0
+                        ">
+                </table>
+            </div>
+
+            <div title="属性"  style="overflow:auto;padding:2px;">
+                 <table id="pg_update_item_property" class="easyui-propertygrid" style="width:100%" data-options="
+                            showGroup:true,
+                            scrollbarSize:0
+                        ">
+                </table>            
+            </div>
+
+            <div title="查看"  style="">
+             
+            </div>
+        </div>
         </div>
 
-        <div class="jsFljgCon" id="div_article_group">
-          <div class="FCon_1">
-            <p><span>栏目版本</span>
-              <select id="" name="" reg="">
-                <option value="">－选择－</option>
-                <option value=""></option>
-                <option value=""></option>
-                <option value=""></option>
-              </select> 
-            </p>            
-            <p><span>状态:未发布</span></p>
-            <p><span>发布日期:(无)</span></p>
-          </div>
-          <div class="FljgConBt">
-            <p><a href="#" id="btn_add_group">保&nbsp;&nbsp;存</a></p>
+      <div class="con4Left">
+        <div id="div_resource_tree" class="easyui-tabs" style="width:100%;height:272px;">
+            <div title="文档" style="padding:5px;">
+                <div id="div_article_tree" class="easyui-panel" style="padding:5px; width:100%; height:100%;"> 
+                <ul id="article_tree" class="easyui-tree" 
+                data-options="animate:true,dnd:false, checkbox:true,
+                            onContextMenu: function(e,node){
+                                e.preventDefault();
+                                $(this).tree('select',node.target);
+                                $('#mm_article').menu('show',{
+                                    left: e.pageX,
+                                    top: e.pageY
+                                });
+                            }
+                "> 
+			    <li>
+				    <span id="Span1">所有文档</span> 
+			    </li> 
+                </ul> 
+                </div>                     
+            </div>
+            <div id="mm_article" class="easyui-menu" style="width:240px;">
+                <div onclick="add_article_to_column()" data-options="iconCls:'icon-add'">将所选文档加入当前栏目</div>
+            </div>
 
-            <p><a href="#" id="btn_modify_group">预&nbsp;&nbsp;览</a></p>
-            <p><a href="#" id="btn_delete_group">发&nbsp;&nbsp;布</a></p>
-          </div>
-        </div>
+            <div title="图片"  style="overflow:auto;padding:0px;">
+                <div id="div_photo_tree" class="easyui-panel" style="padding:5px; width:100%; height:100%;"> 
+                <ul id="photo_tree" class="easyui-tree" 
+                data-options="animate:true,dnd:false, checkbox:true,
+                            onContextMenu: function(e,node){
+                                e.preventDefault();
+                                $(this).tree('select',node.target);
+                                $('#mm_photo').menu('show',{
+                                    left: e.pageX,
+                                    top: e.pageY
+                                });
+                            }
+                "> 
+			    <li>
+				    <span id="Span2">所有图片</span> 
+			    </li> 
+                </ul> 
+                </div>      
+            </div>
+            <div id="mm_photo" class="easyui-menu" style="width:240px;">
+                <div onclick="add_photo_to_column()" data-options="iconCls:'icon-add'">将所选图片加入当前栏目</div>
+            </div>
 
-        <div class="jsFljgCon" id="div_article_list" style="display:none">
-        <!--
-	        <table class="easyui-datagrid" title="DataGrid with Toolbar" style="width:700px;height:250px"
-			        data-options="rownumbers:true,singleSelect:true,url:'datagrid_data1.json',method:'get',toolbar:toolbar">
-		        <thead>
-			        <tr>
-				        <th data-options="field:'itemid',width:80">Item ID</th>
-				        <th data-options="field:'productid',width:100">Product</th>
-				        <th data-options="field:'listprice',width:80,align:'right'">List Price</th>
-				        <th data-options="field:'unitcost',width:80,align:'right'">Unit Cost</th>
-				        <th data-options="field:'attr1',width:240">Attribute</th>
-				        <th data-options="field:'status',width:60,align:'center'">Status</th>
-			        </tr>
-		        </thead>
-	        </table>
-	        <script type="text/javascript">
-	            var toolbar = [{
-	                text: 'Add',
-	                iconCls: 'icon-add',
-	                handler: function () { alert('add') }
-	            }, {
-	                text: 'Cut',
-	                iconCls: 'icon-cut',
-	                handler: function () { alert('cut') }
-	            }, '-', {
-	                text: 'Save',
-	                iconCls: 'icon-save',
-	                handler: function () { alert('save') }
-	            }];
-	        </script>
-            -->
         </div>
-
-        <div class="jsFljgCon" id="div_article_priolity" style="display:none">
-        <!--
-	        <table class="easyui-datagrid" title="Basic DataGrid" style="width:640px;height:400px"
-			        data-options="singleSelect:true,collapsible:true,url:'datagrid_data1.json',method:'get'">
-		        <thead>
-			        <tr>
-				        <th data-options="field:'itemid',width:80">Item ID</th>
-				        <th data-options="field:'productid',width:100">Product</th>
-				        <th data-options="field:'listprice',width:80,align:'right'">List Price</th>
-				        <th data-options="field:'unitcost',width:80,align:'right'">Unit Cost</th>
-				        <th data-options="field:'attr1',width:240">Attribute</th>
-				        <th data-options="field:'status',width:160,align:'center'">Status</th>
-			        </tr>
-		        </thead>
-	        </table>
-        -->
-        </div>
-
-      </div>
-      <!--
-      <div class="con1Left2">
-        <div class="jsnrjg">
-          <p>技术内容结构</p>
-        </div>
-        <div class="jsnrjgCon"> </div>
       </div>
   
-      <div class="con1Right2"> 
-        <div class="jsFljg">
-          <p>内容属性</p>
-        </div>
-        <div class="jsnrjgCon2">
-          <div class="FCon_2">
-            <p><span>名称</span><input name="" type="text" /></p>
-            <p><span>内容格式</span>
-              <select id="" name="" reg="">
-		            <option value="">－选择－</option>
-		            <option value=""></option>
-		            <option value=""></option>
-		            <option value=""></option>
-		          </select> 
-            </p>
-            <p><span>备注</span><textarea name="" reg="" tip="" cols="40" rows="5"></textarea></p>
-          </div>
-          <div class="FljgConBt">
-            <p><a href="#">新&nbsp;&nbsp;增</a></p>
-            <p><a href="#">修&nbsp;&nbsp;改</a></p>
-            <p><a href="#">删&nbsp;&nbsp;除</a></p>
-          </div>
+      <div class="con4Right">
+        <div id="div_resource_option" class="easyui-tabs" style="width:100%;height:272px;">
+            <div title="属性"  style="overflow:auto;padding:2px;">
+                 <table id="dg_resource_property" class="easyui-propertygrid" style="width:100%" data-options="
+                            showGroup:true,
+                            scrollbarSize:0
+                        ">
+                </table>      
+            </div>
+
+            <div title="查看"  style="">
+             
+            </div>
         </div>
       </div>
-      -->
+
     </div> <!-- end of con1 -->
  
     <div class="clear"></div>

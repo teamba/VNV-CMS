@@ -82,6 +82,10 @@ ul#menu li ul li a:hover {
 .con1Right{ width:69%; float:right;}
 .con1Left2{ width:30%; float:left; margin-top:10px;}
 .con1Right2{ width:69%; float:right;margin-top:10px;}
+.con3Left{ width:69%; float:left;}
+.con3Right{ width:30%; float:right;}
+.con4Left{ width:69%; float:left;margin-top:10px;}
+.con4Right{ width:30%; float:right;margin-top:10px;}
 
 .jsFljg{ height:32px; float:left; border-left:1px solid #e2e2e2;}
 .jsFljg p{ background:#f5f4f4; border:1px solid #e2e2e2; border-left:none; border-bottom:none; float:left; line-height:32px; padding:0px 15px; overflow: auto;}

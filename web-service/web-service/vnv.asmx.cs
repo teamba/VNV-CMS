@@ -21,7 +21,7 @@ namespace web_service
     {
         webdataDataContext data = new webdataDataContext();
 
-        [WebMethod]
+        [WebMethod(EnableSession=true)]
         public string HelloWorld()
         {
             return "Hello World";
@@ -29,7 +29,7 @@ namespace web_service
 
         #region Column Service
 
-        [WebMethod]
+        [WebMethod(EnableSession=true)]
         public string GetColumn(int columnID)
         {
             t_Column obj = data.t_Column.First(c => c.ID == columnID);
@@ -51,7 +51,7 @@ namespace web_service
             return output;
         }
 
-        [WebMethod]
+        [WebMethod(EnableSession=true)]
         public string GetColumnEx(int columnID)
         {
             t_Column obj = data.t_Column.First(c => c.ID == columnID);
@@ -74,7 +74,7 @@ namespace web_service
             return output;
         }
 
-        [WebMethod]
+        [WebMethod(EnableSession=true)]
         public string UpdateColumn(string strColumnEx)
         {
             clsColumnEx column = JsonConvert.DeserializeObject<clsColumnEx>(strColumnEx);
@@ -101,7 +101,7 @@ namespace web_service
             return output;
         }
 
-        [WebMethod]
+        [WebMethod(EnableSession=true)]
         public string AddColumn(int parentID, string strColumnEx)
         {
             clsColumnEx column = JsonConvert.DeserializeObject<clsColumnEx>(strColumnEx);
@@ -133,7 +133,7 @@ namespace web_service
             return output;
         }
 
-        [WebMethod]
+        [WebMethod(EnableSession=true)]
         public string DeleteColumn(int columnID)
         {
             var obj = data.t_Column.First(c => c.ID == columnID);
@@ -149,7 +149,7 @@ namespace web_service
             return output;
         }
 
-        [WebMethod] 
+        [WebMethod(EnableSession=true)] 
         public string GetColumns(int parentID)
         {
             var objs = data.t_Column.Where(c => c.ParentID == parentID);
@@ -176,7 +176,7 @@ namespace web_service
             return output;
         }
 
-        [WebMethod]
+        [WebMethod(EnableSession=true)]
         public string GetColumnAll()
         {
             var objs = data.t_Column;
@@ -207,7 +207,7 @@ namespace web_service
 
         #region Group Service
 
-        [WebMethod]
+        [WebMethod(EnableSession=true)]
         public string GetGroup(int groupID)
         {
             t_Group obj = data.t_Group.First(g => g.ID == groupID);
@@ -232,7 +232,7 @@ namespace web_service
             return output;
         }
 
-        [WebMethod]
+        [WebMethod(EnableSession=true)]
         public string GetGroupEx(int groupID)
         {
             t_Group obj = data.t_Group.First(g => g.ID == groupID);
@@ -261,7 +261,7 @@ namespace web_service
             return output;
         }
 
-        [WebMethod]
+        [WebMethod(EnableSession=true)]
         public string GetGroupAll(int Type)
         {
             var objs = data.t_Group.Where(g => g.Type == Type);
@@ -287,7 +287,7 @@ namespace web_service
             return output;
         }
 
-        [WebMethod]
+        [WebMethod(EnableSession=true)]
         public string AddGroup(int parentID, string strGroupEx)
         {
             clsGroupEx group = JsonConvert.DeserializeObject<clsGroupEx>(strGroupEx);
@@ -321,7 +321,7 @@ namespace web_service
             return output;
         }
 
-        [WebMethod]
+        [WebMethod(EnableSession=true)]
         public string UpdateGroup(string strGroupEx)
         {
             clsGroupEx group = JsonConvert.DeserializeObject<clsGroupEx>(strGroupEx);
@@ -349,7 +349,7 @@ namespace web_service
             return output;
         }
 
-        [WebMethod]
+        [WebMethod(EnableSession=true)]
         public string DeleteGroup(int groupID)
         {
             string strSQL = "Delete t_Group Where ID=" + groupID;
@@ -365,7 +365,7 @@ namespace web_service
 
         #region Resource Service
 
-        [WebMethod]
+        [WebMethod(EnableSession=true)]
         public string GetResources(int groupID)
         {
             clsResource resource;
@@ -393,7 +393,7 @@ namespace web_service
             return output;
         }
 
-        [WebMethod]
+        [WebMethod(EnableSession=true)]
         public string GetResourceEx(int ID)
         {
             clsResourceEx resource = new clsResourceEx();
@@ -424,7 +424,7 @@ namespace web_service
             return output;
         }
 
-        [WebMethod]
+        [WebMethod(EnableSession=true)]
         public string AddResource(int groupID, string strResourceEx, string content)
         {
             clsResourceEx resource = JsonConvert.DeserializeObject<clsResourceEx>(strResourceEx);
@@ -455,7 +455,7 @@ namespace web_service
             return output;
         }
 
-        [WebMethod]
+        [WebMethod(EnableSession=true)]
         public string UpdateResource(string strResourceEx, string content)
         {
             clsResourceEx resource = JsonConvert.DeserializeObject<clsResourceEx>(strResourceEx);
@@ -490,7 +490,7 @@ namespace web_service
             return output;
         }
 
-        [WebMethod]
+        [WebMethod(EnableSession=true)]
         public string DeleteResource(int ID)
         {
             string strSQL = "Delete t_Resource Where ID=" + ID;
@@ -498,6 +498,293 @@ namespace web_service
 
             clsResult result = new clsResult();
             string output = JsonConvert.SerializeObject(result);
+            return output;
+        }
+
+        #endregion
+
+        #region Publish Service
+
+        [WebMethod(EnableSession=true)]
+        public string GetEditUpdate(int columnID)
+        {
+            /* 取指定栏目正在编辑的内容
+             * 如果没有正在编辑的内容，则返回空
+             */
+            int userID = 0;
+            if (Session["userID"] != null) userID = Convert.ToInt32(Session["userID"]);
+            var objs = from i in data.t_UpdateItem
+                       join u in data.t_ColumnUpdate on i.UpdateID equals u.ID
+                       join r in data.t_Resource on i.ResourceID equals r.ID
+                       where u.OwnerID == userID && u.Status == 0
+                       select new clsUpdateItem
+                       {
+                           ID = i.ID,
+                           UpdateID = u.ID,
+                           ResourceID = r.ID,
+                           Title = (i.Title.Trim()=="")?r.Title.Trim():i.Title.Trim(),
+                           Brief = i.Brief,
+                           ListPoint = (int)i.ListPoint
+                       };
+
+            clsResult result = new clsResult();
+
+            result.flag = objs.Count();
+            result.items = objs;
+
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        [WebMethod(EnableSession=true)]
+        public string SaveEditUpdate(int updateID, int columnID, string strUpdateItem)
+        {
+            /* 将指定的内容保存成正在被编辑
+             * 如果updateID>0，则有效，
+             *      如果其状态也为0，则替换原内容
+             *      如果其状态为1或者2，则保留原内容，保存成新内容，原状态0内容转为2
+             *      
+             * 如果updateID<0，则以columnID(必须>0)为准
+             *      如果不存在状态0的内容，则新增内容，状态为0
+             *      如果存在状态为0的内容，则将新内容添加进去，避免内容重复
+             *      
+             * strUpdateItem
+             * resourceID|resourceID|...|resourceID
+             * 按次序保存
+             */
+            int userID = 0;
+            if (Session["userID"] != null) userID = Convert.ToInt32(Session["userID"]);
+
+            string[] items = strUpdateItem.Split('|');
+
+            t_ColumnUpdate tu = null;
+
+            if (updateID > 0)
+            {
+                var objs = data.t_ColumnUpdate.Where(u => u.ID == updateID);
+                if (objs.Count() > 0) foreach (var obj in objs) { tu = obj; break; }
+            }
+            else
+            {
+                var objs = data.t_ColumnUpdate.Where(u => u.OwnerID == userID && u.Status == 0);
+                if (objs.Count() > 0) foreach (var obj in objs) { tu = obj; break; }
+            }
+
+            string strSQL = "Update t_ColumnUpdate Set Status=2 Where Status=0 And OwnerID=" + userID;
+            data.ExecuteCommand(strSQL);
+
+            if (tu == null)
+            {
+                tu = new t_ColumnUpdate();
+                tu.OwnerID = userID;
+                tu.ColumnID = columnID;
+                tu.CreateDate = DateTime.Now;
+
+                data.t_ColumnUpdate.InsertOnSubmit(tu);
+                data.SubmitChanges();
+            }
+            else
+            {
+                if (tu.Status == 1)
+                {
+                    tu.Status = 2;
+                    data.SubmitChanges();
+
+                    tu.Status = 0;
+                    data.t_ColumnUpdate.InsertOnSubmit(tu);
+                    data.SubmitChanges();
+                }
+            }
+
+            tu.Status = 0;
+            data.SubmitChanges();
+
+            var objss = data.t_UpdateItem.Where(u => u.UpdateID == tu.ID);
+            clsUpdateItemSet uitems = new clsUpdateItemSet();
+            clsUpdateItem uitem;
+            if (objss.Count() > 0) foreach (var obj in objss)
+                {
+                    uitem = new clsUpdateItem();
+                    uitem.ResourceID = (int)obj.ResourceID;
+                    uitems.Add(uitem);
+                }
+
+            t_UpdateItem ui;
+            for (int i = 0; i < items.Count(); i++)
+            {
+                if (uitems.Exist(Convert.ToInt32(items[i]))) continue;
+
+                ui = new t_UpdateItem();
+                ui.ResourceID = Convert.ToInt32(items[i]);
+                ui.ListPoint = i + 1;
+                ui.UpdateID = tu.ID;
+                ui.Title = "";
+                ui.Brief = "";
+                data.t_UpdateItem.InsertOnSubmit(ui);
+                data.SubmitChanges();
+
+                uitem = new clsUpdateItem();
+                uitem.ResourceID = Convert.ToInt32(items[i]);
+                uitems.Add(uitem);
+            }
+
+            clsResult result = new clsResult();
+
+            result.flag = uitems.Count;
+            result.items = tu;
+
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        [WebMethod(EnableSession=true)]
+        public string SaveAllUpdate(string strUpdates)
+        {
+            /* 给所有指定的栏目保存内容
+             * 内容只能追加保存，避免重复
+             * 
+             * strUpdate
+             * columnid:resouseid|resourceid|..resourceid-columnid:resourceid|...resourceid
+             */
+            int userID = 0;
+            if (Session["userID"] != null) userID = Convert.ToInt32(Session["userID"]);
+
+            string[] items1 = strUpdates.Split('-');
+            string[] items2;
+            for (int i = 0; i < items1.Count(); i++)
+            {
+                items2 = items1[i].Split(':');
+                if (items2.Count() != 2) continue;
+
+                SaveEditUpdate(0, Convert.ToInt32(items2[0]), items2[1]);
+            }
+
+            clsResult result = new clsResult();
+            result.flag = items1.Count();
+
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        [WebMethod(EnableSession=true)]
+        public string SaveUpdateItem(string strUpdateItem)
+        {
+            /* 保存一单项内容，包括brief, title, listpoint
+             */
+            int userID = 0;
+            if (Session["userID"] != null) userID = Convert.ToInt32(Session["userID"]);
+
+            clsUpdateItem item = JsonConvert.DeserializeObject<clsUpdateItem>(strUpdateItem);
+
+            var objs = data.t_UpdateItem.Where(u => u.ID == item.ID);
+            foreach (var obj in objs)
+            {
+                obj.Title = item.Title.Trim();
+                obj.ListPoint = item.ListPoint;
+                obj.Brief = item.Brief.Trim();
+
+                data.SubmitChanges();
+            }
+
+            clsResult result = new clsResult();
+
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        [WebMethod(EnableSession=true)]
+        public string GetUpdates(int columnID)
+        {
+            /* 取指定栏目的所有update
+             */
+            int userID = 0;
+            if (Session["userID"] != null) userID = Convert.ToInt32(Session["userID"]);
+
+            var objs = from u in data.t_ColumnUpdate
+                       where u.ColumnID == columnID && u.OwnerID == userID 
+                       orderby u.CreateDate descending
+                       select new clsColumnUpdate
+                       {
+                           ID = u.ID,
+                           OwnerID = (int)u.OwnerID,
+                           ColumnID = columnID,
+                           CreateDate = (DateTime)u.CreateDate,
+                           Status = (int)u.Status
+                       };
+
+            clsResult result = new clsResult();
+            result.flag = objs.Count();
+            result.items = objs;
+
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        [WebMethod(EnableSession=true)]
+        public string GetUpdateItems(int updateID)
+        {
+            /* 取指定update的所有内容
+             */
+            int userID = 0;
+            if (Session["userID"] != null) userID = Convert.ToInt32(Session["userID"]);
+
+            var objs = from i in data.t_UpdateItem
+                       join r in data.t_Resource on i.ResourceID equals r.ID
+                       where i.UpdateID == updateID
+                       orderby i.ListPoint
+                       select new clsUpdateItem
+                       {
+                           ID = i.ID,
+                           ResourceID = r.ID,
+                           Brief = (Convert.ToString(i.Brief)).Trim(),
+                           Title = ((Convert.ToString(i.Title)).Trim() == "") ? (Convert.ToString(r.Title)).Trim() : (Convert.ToString(i.Title)).Trim(),
+                           UpdateID = updateID,
+                           ListPoint = (int)i.ListPoint
+                       };
+            /*
+            clsUpdateItem item;
+            clsUpdateItemSet items = new clsUpdateItemSet();
+            foreach (var obj in objs) //if (objs != null) 
+                {
+                    item = new clsUpdateItem();
+                    item.ID = obj.ID;
+                    item.ResourceID = obj.ResourceID;
+                    item.Title = obj.Title;
+                    item.Brief = obj.Brief;
+                    item.UpdateID = obj.UpdateID;
+                    item.ListPoint = obj.ListPoint;
+                    items.Add(item);
+                }
+            */
+            clsResult result = new clsResult();
+            result.flag = objs.Count();// items.Count;
+            result.items = objs;// items;
+
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        [WebMethod(EnableSession=true)]
+        public string DeleteUpdateItem(int updateID, int resourceID)
+        {
+            /* 删除指定update中的某项内容
+             */
+            int userID = 0;
+            if (Session["userID"] != null) userID = Convert.ToInt32(Session["userID"]);
+
+            string strSQL = "Delete from t_UpdateItem Where UpdateID=" + updateID + " And ResourceID=" + resourceID;
+            data.ExecuteCommand(strSQL);
+
+            clsResult result = new clsResult();
+
+            string output = JsonConvert.SerializeObject(result);
+
             return output;
         }
 
