@@ -158,7 +158,8 @@ function load_photo_run(res) {
     }
     else {
         current_photo = res.items;
-
+		console.log(current_photo.Content);
+		$('#div_photo_view').html("<img src='/uploader/server/upload/" +  current_photo.Content + "'>");
         show_photo_property();
     }
 }
@@ -457,6 +458,9 @@ function show_group(groupID) {
                 show_group_run(result);
             }
         });
+		
+		// transfer the group id for image uploader
+		$.post("/uploader/server/dataio.php", {group_id:groupID}, function(data) {});
     }
     else {
         $.ajax({
@@ -589,13 +593,13 @@ function init_photo() {
             handler: function () {
                 alert('search');
             }
-        }, {
+        }, /*{
             iconCls: 'icon-add',
             handler: function () {
                 //alert('add');
                 add_photo();
             }
-        }, {
+        }, */{
             iconCls: 'icon-save',
             handler: function () {
                 //alert('save');

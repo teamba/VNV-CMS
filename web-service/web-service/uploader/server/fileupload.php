@@ -78,11 +78,14 @@ if (isset($_REQUEST["name"])) {
 } elseif (!empty($_FILES)) {
     $fileName = $_FILES["file"]["name"];
 } else {
-    $fileName = uniqid("file_");
+    $fileName ="no name";// uniqid("file_");
 }
 
-$filePath = $targetDir . DIRECTORY_SEPARATOR . $fileName;
-$uploadPath = $uploadDir . DIRECTORY_SEPARATOR . $fileName;
+// add: 2015-12-28
+$targetName = uniqid("image_").$fileName;
+
+$filePath = $targetDir . DIRECTORY_SEPARATOR . $targetName;//$fileName;
+$uploadPath = $uploadDir . DIRECTORY_SEPARATOR . $targetName;//$fileName;
 
 // Chunking might be enabled
 $chunk = isset($_REQUEST["chunk"]) ? intval($_REQUEST["chunk"]) : 0;
@@ -171,6 +174,20 @@ if ( $done ) {
         flock($out, LOCK_UN);
     }
     @fclose($out);
+}
+
+// write the upload resource info into data base , 2015-12-28
+session_start(); 
+$group_id = $_SESSION['group_id'];
+if ($group_id) {
+$con = mysql_connect("127.0.0.1","root","hovool");
+if ($con) {
+	mysql_select_db("VNVCMS", $con);
+			
+	$strSQL = "insert into t_Resource(Title, GroupID, Type, status, CreateDate, Content) Values ('".$fileName."', ".$group_id.", 2, 0, '".date("Y-m-d")." ".date("h:i:sa")."', '".$targetName."')";
+	mysql_query($strSQL);
+	mysql_close($con);
+}
 }
 
 // Return Success JSON-RPC response

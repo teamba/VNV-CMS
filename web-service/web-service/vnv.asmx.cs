@@ -516,7 +516,7 @@ namespace web_service
             var objs = from i in data.t_UpdateItem
                        join u in data.t_ColumnUpdate on i.UpdateID equals u.ID
                        join r in data.t_Resource on i.ResourceID equals r.ID
-                       where u.OwnerID == userID && u.Status == 0
+                       where u.OwnerID == userID && u.Status == 0 && u.ColumnID == columnID
                        select new clsUpdateItem
                        {
                            ID = i.ID,
@@ -571,9 +571,10 @@ namespace web_service
                 if (objs.Count() > 0) foreach (var obj in objs) { tu = obj; break; }
             }
 
-            string strSQL = "Update t_ColumnUpdate Set Status=2 Where Status=0 And OwnerID=" + userID;
+            string strSQL = "Update t_ColumnUpdate Set Status=2 Where Status=0 And OwnerID=" + userID + " And ColumnID=" + columnID;
             data.ExecuteCommand(strSQL);
 
+            int updateID_backup = 0;
             if (tu == null)
             {
                 tu = new t_ColumnUpdate();
@@ -591,7 +592,9 @@ namespace web_service
                     tu.Status = 2;
                     data.SubmitChanges();
 
+                    updateID_backup = tu.ID;
                     tu.Status = 0;
+                    tu.CreateDate = DateTime.Now;
                     data.t_ColumnUpdate.InsertOnSubmit(tu);
                     data.SubmitChanges();
                 }
@@ -600,7 +603,7 @@ namespace web_service
             tu.Status = 0;
             data.SubmitChanges();
 
-            var objss = data.t_UpdateItem.Where(u => u.UpdateID == tu.ID);
+            var objss = data.t_UpdateItem.Where(u => u.UpdateID == updateIP_backup);
             clsUpdateItemSet uitems = new clsUpdateItemSet();
             clsUpdateItem uitem;
             if (objss.Count() > 0) foreach (var obj in objss)

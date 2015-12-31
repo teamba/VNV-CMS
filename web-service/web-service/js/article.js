@@ -527,17 +527,23 @@ function show_group_run(group) {
 
 function show_group(groupID) {
     if (g_php==1) {
+		//console.log("group id:" + groupID);
         $.post("/group/get", {id:groupID}, function(data) {
-            //alert(data);
-            var result = data;//eval('(' + data + ')');
-            if (result.flag<0)  {
-
+		//$.get("/group/get/?id="+groupID, function(data) {											  
+            //console.log(data);
+            var result = data; //eval('(' + data + ')');
+            if (result.flag<=0)  {
+				alert(result.error);
             }  
             else {
+				//console.log("group name;" + result.items.Name);
                 current_group = result.items;
                 show_group_run(result);
             }
         });
+		
+		// transfer the group id for image uploader
+		$.post("/uploader/server/dataio.php", {group_id:groupID}, function(data) {});		
     }
     else {
         $.ajax({

@@ -1,4 +1,4 @@
-﻿function create_column_node(column, columns, parent) {
+﻿function create_column_node_set(column, columns, parent) {
     $('#column_tree').tree('append', {
         parent: parent.target,
         data: {
@@ -13,13 +13,14 @@
     node = $('#column_tree').tree('find', column.ID);
     //console.log("new node:" + node.id + "--" + node.text);
     var i;
-    if (node) for (i = 0; i < columns.length; i++) if (columns[i].ParentID == column.ID) create_column_node(columns[i], columns, node);
+    if (node) for (i = 0; i < columns.length; i++) if (columns[i].ParentID == column.ID) create_column_node_set(columns[i], columns, node);
 }
 
 function show_column_run(column) {
+	//console.log("Enter:show_column_run");
     if (column.flag < 0) {
         // error
-        //console.log("show_column: error");
+        //console.log("show_column: error--"+column.error);
     }
     else {
         //console.log("column name:" + column.items.Name);
@@ -91,7 +92,7 @@ function update_column() {
 
 }
 
-function add_column_run(result) {
+function add_column_run(parent_id, result) {
     if (result.flag < 0) {
         // error
         //console.log("add_column: error");
@@ -105,7 +106,7 @@ function add_column_run(result) {
             parent: parent_node.target,
             data: {
                 id: result.flag,
-                text: column.Name
+                text: result.items.Name
             }
         });
 
@@ -124,7 +125,7 @@ function add_column(parent_id) {
 
     if (g_php) {
         $.post("/column/add", {parentID:parent_id, strColumnEx:str}, function(data) {
-             add_column_run(data);
+             add_column_run(parent_id, data);
         });
     }
     else {
@@ -136,7 +137,7 @@ function add_column(parent_id) {
             dataType: 'json',
             success: function (result) {
                 var result = eval('(' + result.d + ')');
-                add_column_run(result);
+                add_column_run(parent_id, result);
             }
         });        
     }
@@ -189,7 +190,7 @@ function init_columnSet() {
             var i;
             var root = $('#column_tree').tree('getRoot');
             for (i = 0; i < data.items.length; i++) {
-                if (data.items[i].ParentID == 0) create_column_node(data.items[i], data.items, root);
+                if (data.items[i].ParentID == 0) create_column_node_set(data.items[i], data.items, root);
             }       
         });
     }
@@ -205,7 +206,7 @@ function init_columnSet() {
                 var i;
                 var root = $('#column_tree').tree('getRoot');
                 for (i = 0; i < columns.items.length; i++) {
-                    if (columns.items[i].ParentID == 0) create_column_node(columns.items[i], columns.items, root);
+                    if (columns.items[i].ParentID == 0) create_column_node_set(columns.items[i], columns.items, root);
                 }
             }
         });

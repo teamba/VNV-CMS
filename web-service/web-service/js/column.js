@@ -450,8 +450,8 @@ function init_column() {
         });
     }
 
-    create_article_tree();
-    create_photo_tree();
+    create_article_tree_col();
+    create_photo_tree_col();
 
     //init_page();
 
@@ -522,7 +522,7 @@ function init_column() {
 }
 
 /* ---------- function for group tree ---------*/
-function create_article_node(group, groups, parent) {
+function create_article_node_col(group, groups, parent) {
     $('#article_tree').tree('append', {
         parent: parent.target,
         data: {
@@ -535,10 +535,10 @@ function create_article_node(group, groups, parent) {
     node = $('#article_tree').tree('find', "g:" + group.ID);
 
     var i;
-    if (node) for (i = 0; i < groups.length; i++) if (groups[i].ParentID == group.ID) create_article_node(groups[i], groups, node);
+    if (node) for (i = 0; i < groups.length; i++) if (groups[i].ParentID == group.ID) create_article_node_col(groups[i], groups, node);
 }
 
-function create_photo_node(group, groups, parent) {
+function create_photo_node_col(group, groups, parent) {
     $('#photo_tree').tree('append', {
         parent: parent.target,
         data: {
@@ -551,10 +551,10 @@ function create_photo_node(group, groups, parent) {
     node = $('#photo_tree').tree('find', "g:" + group.ID);
 
     var i;
-    if (node) for (i = 0; i < groups.length; i++) if (groups[i].ParentID == group.ID) create_photo_node(groups[i], groups, node);
+    if (node) for (i = 0; i < groups.length; i++) if (groups[i].ParentID == group.ID) create_photo_node_col(groups[i], groups, node);
 }
 
-function create_article_tree() {
+function create_article_tree_col() {
     if (g_php) {
         $.post("/group/get_all", { Type: 1 }, function (data) {
             //alert(data);
@@ -562,7 +562,7 @@ function create_article_tree() {
             var i;
             var root = $('#article_tree').tree('getRoot');
             for (i = 0; i < groups.items.length; i++) {
-                if (groups.items[i].ParentID == 0) create_article_node(groups.items[i], groups.items, root);
+                if (groups.items[i].ParentID == 0) create_article_node_col(groups.items[i], groups.items, root);
             }
         });
     }
@@ -579,7 +579,7 @@ function create_article_tree() {
                 var i;
                 var root = $('#article_tree').tree('getRoot');
                 for (i = 0; i < groups.items.length; i++) {
-                    if (groups.items[i].ParentID == 0) create_article_node(groups.items[i], groups.items, root);
+                    if (groups.items[i].ParentID == 0) create_article_node_col(groups.items[i], groups.items, root);
                 }
 
             }
@@ -587,7 +587,7 @@ function create_article_tree() {
     }
 }
 
-function create_photo_tree() {
+function create_photo_tree_col() {
     if (g_php) {
         $.post("/group/get_all", { Type: 1 }, function (data) {
             //alert(data);
@@ -595,7 +595,7 @@ function create_photo_tree() {
             var i;
             var root = $('#photo_tree').tree('getRoot');
             for (i = 0; i < groups.items.length; i++) {
-                if (groups.items[i].ParentID == 0) create_photo_node(groups.items[i], groups.items, root);
+                if (groups.items[i].ParentID == 0) create_photo_node_col(groups.items[i], groups.items, root);
             }
         });
     }
@@ -612,7 +612,7 @@ function create_photo_tree() {
                 var i;
                 var root = $('#photo_tree').tree('getRoot');
                 for (i = 0; i < groups.items.length; i++) {
-                    if (groups.items[i].ParentID == 0) create_photo_node(groups.items[i], groups.items, root);
+                    if (groups.items[i].ParentID == 0) create_photo_node_col(groups.items[i], groups.items, root);
                 }
 
             }

@@ -132,7 +132,7 @@ class group extends CI_Controller {
 			
 			$counter = $counter + 1;
 		}
-
+		
 		$result['flag'] = $counter;
 		$result['items'] = $groups;
 
@@ -160,7 +160,7 @@ class group extends CI_Controller {
 			$this->db->where('ID', $id);
 			$data = $this->db->get('t_Group')->row();
 
-			if ($data)
+			if($data)
 			{
 				$ret['flag'] = 1;
 
@@ -172,13 +172,13 @@ class group extends CI_Controller {
 				$group['Code']= $data->Code;
 
 				$ret['items'] = $data;// $group;
-				$this->session->set_userdata('group_id', $data->ID);
+				//$this->session->set_userdata('group_id', $data->ID);
 			}
 			else
 			{
-				$ret['flag'] = 0;
-				$ret['error'] = "cann't found the group.";
-				$this->session->set_userdata('group_id', 0);
+				$ret['flag'] = -1;
+				$ret['error'] = "cann't found the group. id=".$id;
+				//$this->session->set_userdata('group_id', 0);
 			}
 		}
 		echo json_encode($ret);	
