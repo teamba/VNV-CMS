@@ -66,6 +66,8 @@ namespace web_service
                 column.Brief = obj.Brief.Trim();
             }
 
+            GetProperties(1, columnID, column.Properties);
+
             clsResult result = new clsResult();
             result.items = column;
 
@@ -94,6 +96,8 @@ namespace web_service
                 obj.Brief = column.Brief.Trim();
 
                 data.SubmitChanges();
+
+                if (column.Properties != null) SaveProperties(1, column.ID, column.Properties);
             }
 
             string output = JsonConvert.SerializeObject(result);
@@ -128,6 +132,9 @@ namespace web_service
             data.t_Column.InsertOnSubmit(tc);
             data.SubmitChanges();
 
+            column.ID = tc.ID;
+            if (column.Properties != null) SaveProperties(1, column.ID, column.Properties);
+
             result.flag = tc.ID; 
             output = JsonConvert.SerializeObject(result);
             return output;
@@ -141,6 +148,8 @@ namespace web_service
             {
                 data.t_Column.DeleteOnSubmit(obj);
                 data.SubmitChanges();
+
+                DeleteProperties(1, columnID);
             }
 
             clsResult result = new clsResult();
@@ -248,6 +257,8 @@ namespace web_service
                 group.Brief = (obj.Brief==null)?"":obj.Brief.Trim();
                 group.Code = (obj.Code==null)?"":obj.Code.Trim();
 
+                GetProperties(2, groupID, group.Properties);
+
                 result.items = group;
             }
             else
@@ -316,6 +327,9 @@ namespace web_service
             data.t_Group.InsertOnSubmit(tg);
             data.SubmitChanges();
 
+            group.ID = tg.ID;
+            if (group.Properties != null) SaveProperties(2, group.ID, group.Properties);
+
             result.flag = tg.ID; 
             output = JsonConvert.SerializeObject(result);
             return output;
@@ -342,6 +356,8 @@ namespace web_service
                 obj.Type = group.Type;
 
                 data.SubmitChanges();
+
+                if (group.Properties != null) SaveProperties(2, group.ID, group.Properties);
             }
 
             string output = JsonConvert.SerializeObject(result);
@@ -354,6 +370,8 @@ namespace web_service
         {
             string strSQL = "Delete t_Group Where ID=" + groupID;
             data.ExecuteCommand(strSQL);
+
+            DeleteProperties(2, groupID);
 
             clsResult result = new clsResult();
             string output = JsonConvert.SerializeObject(result);
@@ -415,6 +433,8 @@ namespace web_service
                 resource.Title = (obj.Title == null) ? "" : obj.Title.Trim();
                 resource.Type = (int)obj.ResourceType;
                 resource.UID = (obj.UID == null) ? "" : obj.UID.Trim();
+
+                GetProperties(3, resource.ID, resource.Properties);
             }
 
             clsResult result = new clsResult();
@@ -447,6 +467,9 @@ namespace web_service
 
             data.t_Resource.InsertOnSubmit(tc);
             data.SubmitChanges();
+
+            resource.ID = tc.ID;
+            if (resource.Properties != null) SaveProperties(3, resource.ID, resource.Properties);
 
             clsResult result = new clsResult();
             result.flag = tc.ID;
@@ -484,6 +507,8 @@ namespace web_service
                 tc.Title = resource.Title;
 
                 data.SubmitChanges();
+
+                if (resource.Properties != null) SaveProperties(3, resource.ID, resource.Properties);
             }
 
             string output = JsonConvert.SerializeObject(result);
@@ -495,6 +520,8 @@ namespace web_service
         {
             string strSQL = "Delete t_Resource Where ID=" + ID;
             data.ExecuteCommand(strSQL);
+
+            DeleteProperties(3, ID);
 
             clsResult result = new clsResult();
             string output = JsonConvert.SerializeObject(result);
@@ -558,6 +585,8 @@ namespace web_service
 
             string[] items = strUpdateItem.Split('|');
 
+            clsResult result = new clsResult();
+
             t_ColumnUpdate tu = null;
 
             if (updateID > 0)
@@ -571,12 +600,14 @@ namespace web_service
                 if (objs.Count() > 0) foreach (var obj in objs) { tu = obj; break; }
             }
 
-            string strSQL = "Update t_ColumnUpdate Set Status=2 Where Status=0 And OwnerID=" + userID + " And ColumnID=" + columnID;
+            // change the other editing update to used update
+            string strSQL = "Update t_ColumnUpdate Set Status=2 Where Status=0 And OwnerID=" + userID + " And ColumnID=" + columnID+ " And ID!=" + tu.ID;
             data.ExecuteCommand(strSQL);
 
             int updateID_backup = 0;
             if (tu == null)
             {
+                // create a new update
                 tu = new t_ColumnUpdate();
                 tu.OwnerID = userID;
                 tu.ColumnID = columnID;
@@ -587,11 +618,12 @@ namespace web_service
             }
             else
             {
-                if (tu.Status == 1)
+                if (tu.Status != 0)
                 {
-                    tu.Status = 2;
-                    data.SubmitChanges();
+                    //tu.Status = 2;
+                    //data.SubmitChanges();
 
+                    // not the editing update, keep the exist update and create the new one
                     updateID_backup = tu.ID;
                     tu.Status = 0;
                     tu.CreateDate = DateTime.Now;
@@ -600,10 +632,11 @@ namespace web_service
                 }
             }
 
-            tu.Status = 0;
-            data.SubmitChanges();
+            //tu.Status = 0;
+            //data.SubmitChanges();
 
-            var objss = data.t_UpdateItem.Where(u => u.UpdateID == updateIP_backup);
+            // get the items exist in the editing update
+            var objss = data.t_UpdateItem.Where(u => u.UpdateID == tu.ID); // updateID_backup);
             clsUpdateItemSet uitems = new clsUpdateItemSet();
             clsUpdateItem uitem;
             if (objss.Count() > 0) foreach (var obj in objss)
@@ -616,8 +649,17 @@ namespace web_service
             t_UpdateItem ui;
             for (int i = 0; i < items.Count(); i++)
             {
-                if (uitems.Exist(Convert.ToInt32(items[i]))) continue;
+                // the resource exist in the update items, change the list point only
+                if (uitems.Exist(Convert.ToInt32(items[i])))
+                {
+                    var obj = data.t_UpdateItem.First(u => u.UpdateID == tu.ID && u.ResourceID == Convert.ToInt32(items[i]));
+                    obj.ListPoint = i + 1;
+                    data.SubmitChanges();
 
+                    continue;
+                }
+
+                // add a new item into the update
                 ui = new t_UpdateItem();
                 ui.ResourceID = Convert.ToInt32(items[i]);
                 ui.ListPoint = i + 1;
@@ -632,11 +674,9 @@ namespace web_service
                 uitems.Add(uitem);
             }
 
-            clsResult result = new clsResult();
-
             result.flag = uitems.Count;
             result.items = tu;
-
+ 
             string output = JsonConvert.SerializeObject(result);
 
             return output;
@@ -774,15 +814,140 @@ namespace web_service
         }
 
         [WebMethod(EnableSession=true)]
-        public string DeleteUpdateItem(int updateID, int resourceID)
+        public string DeleteUpdateItem(int ID)
         {
             /* 删除指定update中的某项内容
              */
             int userID = 0;
             if (Session["userID"] != null) userID = Convert.ToInt32(Session["userID"]);
 
-            string strSQL = "Delete from t_UpdateItem Where UpdateID=" + updateID + " And ResourceID=" + resourceID;
+            string strSQL = "Delete from t_UpdateItem Where ID=" + ID;
             data.ExecuteCommand(strSQL);
+
+            DeleteProperties(5, ID);
+
+            clsResult result = new clsResult();
+
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string DeleteUpdateItems(int updateID)
+        {
+            /* 删除指定update中的所有内容
+             */
+            int userID = 0;
+            if (Session["userID"] != null) userID = Convert.ToInt32(Session["userID"]);
+
+            string strSQL = "Delete from t_UpdateItem Where UpdateID=" + updateID;
+            data.ExecuteCommand(strSQL);
+
+            // Delete From t_Property Where ObjectType=5 And ObjectID in (Select ResourceID From t_UpdateItem Where UpdateID=1)
+            strSQL = "Delete From t_Property Where ObjectType=5 And ObjectID in (Select ResourceID From t_UpdateItem Where UpdateID=" + updateID + ")";
+            data.ExecuteCommand(strSQL);
+
+            clsResult result = new clsResult();
+
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string PublishColumn(int columnID)
+        {
+            int userID = 0;
+            if (Session["userID"] != null) userID = Convert.ToInt32(Session["userID"]);
+
+            string strSQL = "Update t_ColumnUpdate Set Status=2 Where Status=1 And ColumnID=" + columnID + " And OwnerID=" + userID;
+            data.ExecuteCommand(strSQL);
+
+            strSQL = "Update t_ColumnUpdate Set Status=1 Where Status=0 And ColumnID=" + columnID + " And OwnerID=" + userID;
+            data.ExecuteCommand(strSQL);
+
+            clsResult result = new clsResult();
+
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        #endregion
+
+        #region Property Service
+
+        public int GetProperties(int objectType, int objectID, clsPropertySet properties)
+        {
+            int ret = 0;
+
+            properties.Clear();
+            clsProperty property;
+
+            var objs = data.t_Property.Where(p => p.ObjectID == objectID && p.ObjectType == objectType);
+            foreach (var obj in objs)
+            {
+                property = new clsProperty();
+                property.ID = obj.ID;
+                property.Key = obj.Key.Trim();
+                property.ObjectID = obj.ID;
+                property.ObjectType = (int)obj.ObjectType;
+                property.Value = obj.Value.Trim();
+
+                properties.Add(property);
+            }
+
+            ret = properties.Count;
+            return ret;
+        }
+
+        public int SaveProperties(int objectType, int objectID, clsPropertySet properties)
+        {
+            int ret = 0;
+
+            t_Property tp;
+            for (int i = 0; i < properties.Count; i++)
+            {
+                tp = new t_Property();
+                tp.ObjectType = properties[i].ObjectType;
+                tp.ObjectID = properties[i].ObjectID;
+                tp.Key = properties[i].Key.Trim();
+                tp.Value = properties[i].Value.Trim();
+
+                data.t_Property.InsertOnSubmit(tp);
+                data.SubmitChanges();
+            }
+
+            return ret;
+        }
+
+        public void DeleteProperties(int objectType, int objectID)
+        {
+            string strSQL = "Delete t_Property Where ObjectType=" + objectType + " And ObjectID=" + objectID;
+            data.ExecuteCommand(strSQL);
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string GetProperties(int objectType, int objectID)
+        {
+            clsResult result = new clsResult();
+
+            clsPropertySet properties = new clsPropertySet();
+            GetProperties(objectType, objectID, properties);
+
+            result.items = properties;
+
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string SaveProperties(int objectType, int objectID, string strProperties)
+        {
+            clsPropertySet properties = JsonConvert.DeserializeObject<clsPropertySet>(strProperties);
+            SaveProperties(objectType, objectID, properties);
 
             clsResult result = new clsResult();
 

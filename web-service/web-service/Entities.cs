@@ -22,7 +22,7 @@ namespace web_service
             Code = "";
         }
 
-        ~clsColumn() { }
+        ~clsColumn() {}
     }
 
     public class clsColumnEx
@@ -33,6 +33,8 @@ namespace web_service
         public string Code { get; set; }
         public string Brief { get; set; }
 
+        public clsPropertySet Properties { get; set; }
+
         public clsColumnEx()
         {
             ID = 0;
@@ -40,9 +42,14 @@ namespace web_service
             Name = "";
             Code = "";
             Brief = "";
+
+            Properties = new clsPropertySet();
         }
 
-        ~clsColumnEx() { }
+        ~clsColumnEx() 
+        {
+            Properties.Clear();
+        }
     }
 
     public class clsColumnSet : CollectionBase
@@ -150,6 +157,8 @@ namespace web_service
         public string Code { get; set; }
         public string Brief { get; set; }
 
+        public clsPropertySet Properties { get; set; }
+
         public clsGroupEx()
         {
             ID = 0;
@@ -157,9 +166,14 @@ namespace web_service
             Name = "";
             Code = "";
             Brief = "";
+
+            Properties = new clsPropertySet();
         }
 
-        ~clsGroupEx() { }
+        ~clsGroupEx() 
+        {
+            Properties.Clear();
+        }
     }
 
     public class clsResource
@@ -228,6 +242,8 @@ namespace web_service
         public string ParentUID { get; set; }
         public string GroupUID { get; set; }
 
+        public clsPropertySet Properties { get; set; }
+
         public clsResourceEx()
         {
             ID = 0;
@@ -245,10 +261,13 @@ namespace web_service
             UID = "";
             ParentUID = "";
             GroupUID = "";
+
+            Properties = new clsPropertySet();
         }
 
         ~clsResourceEx()
         {
+            Properties.Clear();
         }
     }
 
@@ -276,6 +295,8 @@ namespace web_service
          */
         public int Status { get; set; }
 
+        public clsPropertySet Properties { get; set; }
+
         public clsColumnUpdate()
         {
             ID = 0;
@@ -283,10 +304,13 @@ namespace web_service
             OwnerID = 0;
             CreateDate = DateTime.Now;
             Status = 0;
+
+            Properties = new clsPropertySet();
         }
 
         ~clsColumnUpdate()
         {
+            Properties.Clear();
         }
     }
 
@@ -326,6 +350,8 @@ namespace web_service
         public int ListPoint { get; set; }
         public string Brief { get; set; }
 
+        public clsPropertySet Properties { get; set; }
+
         public clsUpdateItem()
         {
             ID = 0;
@@ -334,10 +360,13 @@ namespace web_service
             Title = "";
             ListPoint = 0;
             Brief = "";
+
+            Properties = new clsPropertySet();
         }
 
         ~clsUpdateItem()
         {
+            Properties.Clear();
         }
     }
 
@@ -372,6 +401,63 @@ namespace web_service
             for (int i = 0; i < List.Count; i++) if (this[i].ResourceID == resourceID) return true;
 
             return false;
+        }
+    }
+
+    public class clsProperty
+    {
+        public int ID { get; set; }
+
+        /// <summary>
+        /// 1-column, 2-group, 3-resource, 4-update, 5-update item
+        /// </summary>
+        public int ObjectType { get; set; }
+        public int ObjectID { get; set; }
+        public string Key { get; set; }
+        public string Value { get; set; }
+
+        public clsProperty()
+        {
+            ID = 0;
+            ObjectID = 0;
+            ObjectType = 0;
+            Key = "";
+            Value = "";
+        }
+
+        ~clsProperty()
+        {
+        }
+    }
+
+    public class clsPropertySet : CollectionBase
+    {
+        public clsPropertySet()
+        {
+        }
+
+        ~clsPropertySet()
+        {
+            List.Clear();
+        }
+
+        public clsProperty this[int index]
+        {
+            get
+            {
+                if (index >= 0 && index < List.Count) return (clsProperty)List[index];
+                else return null;
+            }
+
+            set
+            {
+                if (index >= 0 && index < List.Count) List[index] = value;
+            }
+        }
+
+        public void Add(clsProperty property)
+        {
+            List.Add(property);
         }
     }
 }

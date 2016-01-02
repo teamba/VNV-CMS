@@ -1,5 +1,98 @@
 ﻿var current_update_id = 0;
 var current_column_id = 0;
+var current_resource_id = 0;
+
+function view_update_item_run(res) {
+    if (res.flag < 0) {
+        alert(res.error);
+        return;
+    }
+
+    switch (res.items.Type) {
+        case 1:
+            $('#div_update_item_content').html(res.items.Content);
+            break;
+
+        case 2:
+            break;
+
+        default:
+            break;
+    }
+
+    $('#div_update_item_content').show();
+}
+
+function view_update_item() {
+    if (current_resource_id <= 0) return;
+
+    $('#div_view_update_item').hide();
+
+    if (g_php) {
+        $.post("/resource/get_ex", { id: current_resource_id }, function (data) {
+            view_update_item_run(data);
+        });
+    }
+    else {
+        $.ajax({
+            type: "POST",
+            contentType: "application/json",
+            url: "../vnv.asmx/GetResourceEx",
+            data: "{ID:" + current_resource_id + "}", // {parentID:0}
+            dataType: 'json',
+            success: function (result) {
+                var res = eval('(' + result.d + ')');
+                view_update_item_run(res);
+            }
+        });
+    }
+}
+
+function view_resource_run(res) {
+    if (res.flag < 0) {
+        alert(res.error);
+        return;
+    }
+
+    switch (res.items.Type) {
+        case 1:
+            $('#div_resource_content').html(res.items.Content);
+            break;
+
+        case 2:
+            break;
+
+        default:
+            break;
+    }
+
+    $('#div_resource_content').show();
+}
+
+function view_resource() {
+    if (current_resource_id2 <= 0) return;
+
+    $('#div_view_resource').hide();
+
+    if (g_php) {
+        $.post("/resource/get_ex", { id: current_resource_id2 }, function (data) {
+            view_resource_run(data);
+        });
+    }
+    else {
+        $.ajax({
+            type: "POST",
+            contentType: "application/json",
+            url: "../vnv.asmx/GetResourceEx",
+            data: "{ID:" + current_resource_id2 + "}", // {parentID:0}
+            dataType: 'json',
+            success: function (result) {
+                var res = eval('(' + result.d + ')');
+                view_resource_run(res);
+            }
+        });
+    }
+}
 
 function select_update(update_id) {
     //alert(update_id);
@@ -9,6 +102,14 @@ function select_update(update_id) {
     while ($('#column_tree').tree('isLeaf', column_node.target) == false) {
         var nodes = $('#column_tree').tree('getChildren', column_node.target);
         $('#column_tree').tree('remove', nodes[0].target);
+    }
+
+    // clear dg_update_item_sort
+    var rows = $('#dg_update_item_sort').datagrid('getRows');
+    if (rows) {
+        var i, n;
+        n = rows.length;
+        for (i = 0; i < n; i++) $('#dg_update_item_sort').datagrid('deleteRow', 0);
     }
 
     current_update_id = update_id;
@@ -27,13 +128,33 @@ function select_update(update_id) {
                     $('#column_tree').tree('append', {
                         parent: column_node.target,
                         data: {
-                            id: "r:" + res.items[i].ID,
+                            id: "r:" + res.items[i].ResourceID,
                             text: res.items[i].Title
                         }
+                    });
+
+                    // add item into dg_update_item_sort
+                    $('#dg_update_item_sort').datagrid('appendRow', {
+                        id: res.items[i].ResourceID,
+                        listpoint: res.items[i].ListPoint,
+                        title: res.items[i].Title
                     });
                 }
             }
         });
+    }
+
+    // get the property of current update and display
+    $('#div_new_property').show();
+    clear_update_property();
+}
+
+function clear_update_property() {
+    var rows = $('#dg_update_item_property').datagrid('getRows');
+    if (rows) {
+        var i, n;
+        n = rows.length;
+        for (i = 0; i < n; i++) $('#dg_update_item_property').datagrid('deleteRow', 0);
     }
 }
 
@@ -92,27 +213,185 @@ function save_current_column() {
 }
 
 function save_current_column_run(result) {
+    alert("save_current_column_run");
 }
 
 function save_checked_columns() {
+    alert("save_checked_columns");
 }
 
 function clear_current_resource() {
+    //alert("clear_current_resource");
+
+    var node = $('#column_tree').tree('getSelected');
+    if (node == null || node.id == null) {
+        alert("please select a node in the column tree!");
+        return;
+    }
+
+    var items = node.id.split(':');
+    if (items[0] != 'r') {
+        alert("Please select the resource node!");
+        return;
+    }
+
+    if (g_php) {
+    }
+    else {
+        $.ajax({
+            type: "POST",
+            contentType: "application/json",
+            url: "../vnv.asmx/DeleteUpdateItem",
+            data: "{ID:"  + items[1] + "}", // {parentID:0}
+            dataType: 'json',
+            success: function (result) {
+                var res = eval('(' + result.d + ')');
+                if (res.flag < 0) alert(res.error);
+                else $('#column_tree').tree('remove', node.target);
+            }
+        });
+    }
+}
+
+function clear_current_column_run(res) {
+    if (res.flag < 0) {
+        alert(res.error);
+    }
+    else {
+        clear_children_nodes(current_column_id);
+    }
 }
 
 function clear_current_column() {
+    //alert("clear_current_column");
+    if (current_update_id <= 0) return;
+
+    if (g_php) {
+    }
+    else {
+        $.ajax({
+            type: "POST",
+            contentType: "application/json",
+            url: "../vnv.asmx/DeleteUpdateItems",
+            data: "{updateID:" + current_update_id + "}", // {parentID:0}
+            dataType: 'json',
+            success: function (result) {
+                var res = eval('(' + result.d + ')');
+                clear_current_column_run(res);
+            }
+        });
+    }
 }
 
 function reload_current_column() {
+    alert("reload_current_column");
+}
+
+function save_items_properties() {
+    var node = $('#column_tree').tree('getSelected');
+    if (node == null || node.id == null) return;
+
+    var items = node.id.split(':');
+    if (items[0] == 'r') {
+        save_items_properties_run(5, items[1]);
+    }
+    else {
+        if (is_end_column(node)) {
+            save_items_properties_run(4, items[1]);
+        }
+    }
+}
+
+function save_items_properties_run(type, id) {
+    var rows = $('#dg_update_item_property').datagrid('getRows');
+
+    var i, counter=0; count=rows.length;
+    var property;
+    var properties = new Array();
+    for (i=0; i<count; i++) {
+        if (rows[i].value == "") continue;
+
+        property = new Object();
+        property.ID = 0;
+        property.ObjectType = type;
+        property.ObjectID = id;
+        property.Key = rows[i].key;
+        property.Value = rows[i].value;
+
+        properties[counter] = property;
+        counter += 1;
+    }
+
+    var str = JSON.stringify(properties);
+
+    //alert(str);
+    if (g_php) {
+    }
+    else {
+        $.ajax({
+            type: "POST",
+            contentType: "application/json",
+            url: "../vnv.asmx/SaveProperties",
+            data: "{objectType:" + type + ",objectID:" + id + ",strProperties:'" + str + "'}", // {parentID:0}
+            dataType: 'json',
+            success: function (result) {
+                var ret = eval('(' + result.d + ')');
+                
+            }
+        });
+    }
 }
 
 function preview_current_column() {
+    alert("preview_current_column");
+}
+
+function publish_current_column_run(res) {
+    if (res.flag<0) {
+        alert(res.error);
+    }
+    else {
+        if (g_php) {
+        }
+        else {
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "../vnv.asmx/GetUpdates",
+                data: "{columnID:" + current_column_id + "}", // {parentID:0}
+                dataType: 'json',
+                success: function (result) {
+                    var ret = eval('(' + result.d + ')');
+                    show_update_list(ret);
+                }
+            });
+        }
+    }
 }
 
 function publish_current_column() {
+    //alert("publish_current_column");
+    if (current_column_id <= 0) return;
+
+    if (g_php) {
+    }
+    else {
+        $.ajax({
+            type: "POST",
+            contentType: "application/json",
+            url: "../vnv.asmx/PublishColumn",
+            data: "{columnID:" + current_column_id + "}", // {parentID:0}
+            dataType: 'json',
+            success: function (result) {
+                var res = eval('(' + result.d + ')');
+                publish_current_column_run(res);
+            }
+        });
+    }
 }
 
 function publish_checked_columns() {
+    alert("publish_checked_columns");
 }
 
 function add_article_to_column() {
@@ -288,8 +567,8 @@ function show_update_list(result) {
 
         $('#dg_update').datagrid('appendRow', {
             id: result.items[i].ID,
-            createdate: result.items[i].CreateDate,
-            status: status
+            status: status,
+            createdate: result.items[i].CreateDate
         });
     }
 }
@@ -307,12 +586,38 @@ function is_end_column(node) {
     return false;
 }
 
+function clear_children_nodes(column_id) {
+    var node = $('#column_tree').tree('find', "c:" + column_id);
+    if (node == null) return;
+
+    var nodes = $('#column_tree').tree('getChildren', node.target);
+    while (nodes != null && nodes.length>0) {
+        $('#column_tree').tree('remove', nodes[0].target);
+        nodes = $('#column_tree').tree('getChildren', node.target);
+    }
+}
+
 function proc_column_click(node) {
+    $('#div_view_update_item').hide();
+    $('#div_update_item_content').hide();
+    $('#div_new_property').hide();
+
     if (node.id == null) return;
 
     var items = node.id.split(':');
     //var ret = $('#column_tree').tree('isLeaf', node.target);
     //if (items[0] == "c" && $('#column_tree').tree('isLeaf', node.target)) {
+    //current_column_id = 0;
+    //current_update_id = 0;
+
+    if (items[0] == "r") {
+        $('#div_view_update_item').show();
+        current_resource_id = items[1];
+
+        //todo: get the property of current update item and display
+        $('#div_new_property').show();
+    }
+
     if (is_end_column(node)) {
         //alert("is leaf!");
         current_column_id = items[1];
@@ -335,10 +640,21 @@ function proc_column_click(node) {
     }
 }
 
+var current_resource_id2 = 0;
+
 function proc_article_click(node) {
+    $('#div_view_resource').hide();
+    $('#div_resource_content').hide();
+
     if (node.id == null) return;
 
     var items = node.id.split(':');
+
+    if (items[0] == "r") {
+        $('#div_view_resource').show();
+        current_resource_id2 = items[1];
+    }
+
     if (items[0] == "g" && $('#article_tree').tree('isLeaf', node.target)) {
         if (g_php) {
             $.post("/resource/get_list", { groupid: items[1] }, function (data) {
@@ -397,7 +713,18 @@ function show_photo_list(node, res) {
 }
 
 function proc_photo_click(node) {
+    $('#div_view_resource').hide();
+    $('#btn_view_resource').hide();
+
+    if (node.id == null) return;
+
     var items = node.id.split(':');
+
+    if (items[0] == "r") {
+        $('#btn_view_resource').show();
+        current_resource_id2 = items[1];
+    }
+
     if (items[0] == "g" && $('#photo_tree').tree('isLeaf', node.target)) {
         if (g_php) {
             $.post("/resource/get_list", { groupid: items[1] }, function (data) {
@@ -419,6 +746,51 @@ function proc_photo_click(node) {
             });
         }
     }
+}
+
+function pro_item_sort(sort, order) {
+    if (current_column_id <= 0 || current_update_id <= 0) return;
+    if (sort != "listpoint") return;
+
+    clear_children_nodes(current_column_id);
+
+    var node = $('#column_tree').tree('find', "c:" + current_column_id);
+    if (node == null) return;
+
+    var rows = $('#dg_update_item_sort').datagrid('getRows');
+
+    for (var i = 0; i < rows.length; i++) {
+        $('#column_tree').tree('append', {
+            parent: node.target,
+            data: {
+                id: "r:" + rows[i].id,
+                text: rows[i].title
+            }
+        });
+    }
+}
+
+function add_new_property() {
+    //alert("add_new_property");
+    var key  = $('#txt_property_name').val();
+
+    if (key == "") {
+        alert("please input property name and value");
+        return;
+    }
+
+    var rows = $('#dg_update_item_property').propertygrid('getRows');
+    for (var i = 0; i < rows.length; i++) {
+        if (rows[i].key == key) {
+            alert("the key has exist");
+            return;
+        }
+    }
+
+    $('#dg_update_item_property').datagrid('appendRow', {
+        key: key,
+        value: ""
+    });
 }
 
 function init_column() {
@@ -517,6 +889,20 @@ function init_column() {
         var node = $('#column_tree').tree('getSelected');
         if (node && node.id) {
             delete_column(node.id);
+        }
+    });
+
+    $('#btn_view_update_item').click(function () { view_update_item(); });
+    $('#btn_view_resource').click(function () { view_resource(); });
+    $('#btn_add_property').click(function () { add_new_property(); });
+
+    $('#dg_update_item_sort').datagrid().datagrid('enableCellEditing');
+    $('#dg_update_item_property').datagrid().datagrid('enableCellEditing');
+
+    $('#dg_update_item_sort').datagrid({
+        onSortColumn: function (sort, order) {
+            //alert("sort:" + sort + ", order:" + order);
+            pro_item_sort(sort, order);
         }
     });
 }
