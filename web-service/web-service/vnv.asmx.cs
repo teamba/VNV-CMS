@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using System.Web;
 using System.Web.Services;
@@ -24,6 +24,17 @@ namespace web_service
         [WebMethod(EnableSession=true)]
         public string HelloWorld()
         {
+            string strProperties = "[{\"ID\":0,\"ObjectType\":4,\"ObjectID\":\"3022\",\"Key\":\"width\",\"Value\":\"10\"},{\"ID\":0,\"ObjectType\":4,\"ObjectID\":\"3022\",\"Key\":\"height\",\"Value\":\"20\"},{\"ID\":0,\"ObjectType\":4,\"ObjectID\":\"3022\",\"Key\":\"radiao\",\"Value\":\"30\"}]";
+
+            IList objs = JsonConvert.DeserializeObject<IList>(strProperties);
+            clsPropertySet properties = new clsPropertySet();
+            clsProperty property;
+            for (int i = 0; i < objs.Count; i++)
+            {
+                property = JsonConvert.DeserializeObject<clsProperty>(Convert.ToString(objs[i]));
+                properties.Add(property);
+            }
+
             return "Hello World";
         }
 
@@ -276,6 +287,32 @@ namespace web_service
         public string GetGroupAll(int Type)
         {
             var objs = data.t_Group.Where(g => g.Type == Type);
+            clsGroupSet groups = new clsGroupSet();
+            clsGroup group;
+
+            foreach (var obj in objs)
+            {
+                group = new clsGroup();
+                group.ID = obj.ID;
+                group.ParentID = (int)obj.ParentID;
+                group.Name = obj.Name.Trim();
+
+                groups.Add(group);
+            }
+
+            clsResult result = new clsResult();
+            result.items = groups;
+            result.flag = groups.Count;
+
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string GetGroups(int Type, int parentID=0)
+        {
+            var objs = data.t_Group.Where(g => g.Type == Type && g.ParentID==parentID);
             clsGroupSet groups = new clsGroupSet();
             clsGroup group;
 
@@ -601,7 +638,7 @@ namespace web_service
             }
 
             // change the other editing update to used update
-            string strSQL = "Update t_ColumnUpdate Set Status=2 Where Status=0 And OwnerID=" + userID + " And ColumnID=" + columnID+ " And ID!=" + tu.ID;
+            string strSQL = "Update t_ColumnUpdate Set Status=2 Where Status=0 And OwnerID=" + userID + " And ColumnID=" + columnID + " And ID!=" + updateID;
             data.ExecuteCommand(strSQL);
 
             int updateID_backup = 0;
@@ -612,6 +649,7 @@ namespace web_service
                 tu.OwnerID = userID;
                 tu.ColumnID = columnID;
                 tu.CreateDate = DateTime.Now;
+                tu.Status = 0;
 
                 data.t_ColumnUpdate.InsertOnSubmit(tu);
                 data.SubmitChanges();
@@ -946,7 +984,15 @@ namespace web_service
         [WebMethod(EnableSession = true)]
         public string SaveProperties(int objectType, int objectID, string strProperties)
         {
-            clsPropertySet properties = JsonConvert.DeserializeObject<clsPropertySet>(strProperties);
+            IList objs = JsonConvert.DeserializeObject<IList>(strProperties);
+            clsPropertySet properties = new clsPropertySet();
+            clsProperty property;
+            for (int i = 0; i < objs.Count; i++)
+            {
+                property = JsonConvert.DeserializeObject<clsProperty>(Convert.ToString(objs[i]));
+                properties.Add(property);
+            }
+
             SaveProperties(objectType, objectID, properties);
 
             clsResult result = new clsResult();

@@ -147,6 +147,35 @@ function select_update(update_id) {
     // get the property of current update and display
     $('#div_new_property').show();
     clear_update_property();
+    if (g_php) {
+    }
+    else {
+        $.ajax({
+            type: "POST",
+            contentType: "application/json",
+            url: "../vnv.asmx/GetProperties",
+            data: "{objectType:4, objectID:" + current_update_id + "}", // {parentID:0}
+            dataType: 'json',
+            success: function (result) {
+                var res = eval('(' + result.d + ')');
+                show_properties(res);
+            }
+        });
+    }
+}
+
+function show_properties(result) {
+    if (result.flag < 0) {
+        alert(result.error);
+    }
+    else {
+        for(var i=0; i<result.items.length; i++ ) {
+            $('#dg_update_item_property').datagrid('appendRow',{
+	            key: result.items[i].Key,
+	            value: result.items[i].Value
+            });
+        }
+    }
 }
 
 function clear_update_property() {
@@ -213,7 +242,8 @@ function save_current_column() {
 }
 
 function save_current_column_run(result) {
-    alert("save_current_column_run");
+    //alert("save_current_column_run");
+    current_update_id = result.items.ID;
 }
 
 function save_checked_columns() {
@@ -297,7 +327,7 @@ function save_items_properties() {
     }
     else {
         if (is_end_column(node)) {
-            save_items_properties_run(4, items[1]);
+            if (current_update_id > 0) save_items_properties_run(4, current_update_id);
         }
     }
 }
@@ -516,6 +546,21 @@ function add_photo_to_column() {
     }
 }
 
+function create_column_node_parent(columns, parent) {
+    if (parent == null) parent = $('#column_tree').tree('getRoot');
+    if (parent == null) return;
+
+    for (var i = 0; i < columns.length; i++) {
+        $('#column_tree').tree('append', {
+            parent: parent.target,
+            data: {
+                id: "c:" + columns[i].ID,
+                text: columns[i].Name
+            }
+        });
+    }
+}
+
 function create_column_node(column, columns, parent) {
     $('#column_tree').tree('append', {
         parent: parent.target,
@@ -601,6 +646,7 @@ function proc_column_click(node) {
     $('#div_view_update_item').hide();
     $('#div_update_item_content').hide();
     $('#div_new_property').hide();
+    clear_update_property();
 
     if (node.id == null) return;
 
@@ -616,6 +662,23 @@ function proc_column_click(node) {
 
         //todo: get the property of current update item and display
         $('#div_new_property').show();
+        if (g_php) {
+        }
+        else {
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "../vnv.asmx/GetProperties",
+                data: "{objectType:5, objectID:" + current_resource_id + "}", // {parentID:0}
+                dataType: 'json',
+                success: function (result) {
+                    var res = eval('(' + result.d + ')');
+                    show_properties(res);
+                }
+            });
+        }
+
+        return;
     }
 
     if (is_end_column(node)) {
@@ -625,6 +688,21 @@ function proc_column_click(node) {
         if (g_php) {
         }
         else {
+            //check the children columns
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "../vnv.asmx/GetColumns",
+                data: "{parentID:" + items[1] + "}", // {parentID:0}
+                dataType: 'json',
+                success: function (result) {
+                    var columns = eval('(' + result.d + ')');
+                    create_column_node_parent(columns.items, node);
+                }
+            });
+
+            if (is_end_column(node) == false) return;
+
             $.ajax({
                 type: "POST",
                 contentType: "application/json",
@@ -663,6 +741,21 @@ function proc_article_click(node) {
             });
         }
         else {
+            // check the children group
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "../vnv.asmx/GetGroups",
+                data: "{Type:1, parentID:" + items[1] + "}", // {parentID:0}
+                dataType: 'json',
+                success: function (result) {
+                    var res = eval('(' + result.d + ')');
+                    create_article_node_col_parent(res.items, node);
+                }
+            });
+
+            if ($('#article_tree').tree('isLeaf', node.target)==false) return;
+
             $.ajax({
                 type: "POST",
                 contentType: "application/json",
@@ -733,6 +826,21 @@ function proc_photo_click(node) {
             });
         }
         else {
+            // check the children group
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "../vnv.asmx/GetGroups",
+                data: "{Type:2, parentID:" + items[1] + "}", // {parentID:0}
+                dataType: 'json',
+                success: function (result) {
+                    var res = eval('(' + result.d + ')');
+                    create_photo_node_col_parent(res.items, node);
+                }
+            });
+
+            if ($('#photo_tree').tree('isLeaf', node.target) == false) return;
+
             $.ajax({
                 type: "POST",
                 contentType: "application/json",
@@ -808,16 +916,19 @@ function init_column() {
         $.ajax({
             type: "POST",
             contentType: "application/json",
-            url: "../vnv.asmx/GetColumnAll",
-            data: "", // {parentID:0}
+            url: "../vnv.asmx/GetColumns",
+            data: "{parentID:0}", // {parentID:0}
             dataType: 'json',
             success: function (result) {
                 var columns = eval('(' + result.d + ')');
+                create_column_node_parent(columns.items, null);
+                /*
                 var i;
                 var root = $('#column_tree').tree('getRoot');
                 for (i = 0; i < columns.items.length; i++) {
-                    if (columns.items[i].ParentID == 0) create_column_node(columns.items[i], columns.items, root);
+                if (columns.items[i].ParentID == 0) create_column_node(columns.items[i], columns.items, root);
                 }
+                */
             }
         });
     }
@@ -908,6 +1019,21 @@ function init_column() {
 }
 
 /* ---------- function for group tree ---------*/
+function create_article_node_col_parent(groups, parent) {
+    if (parent == null) parent = $('#article_tree').tree('getRoot');
+    if (parent == null) return;
+
+    for (var i = 0; i < groups.length; i++) {
+        $('#article_tree').tree('append', {
+            parent: parent.target,
+            data: {
+                id: "g:" + groups[i].ID,
+                text: groups[i].Name
+            }
+        });
+    }
+}
+
 function create_article_node_col(group, groups, parent) {
     $('#article_tree').tree('append', {
         parent: parent.target,
@@ -922,6 +1048,21 @@ function create_article_node_col(group, groups, parent) {
 
     var i;
     if (node) for (i = 0; i < groups.length; i++) if (groups[i].ParentID == group.ID) create_article_node_col(groups[i], groups, node);
+}
+
+function create_photo_node_col_parent(groups, parent) {
+    if (parent == null) parent = $('#photo_tree').tree('getRoot');
+    if (parent == null) return;
+
+    for (var i = 0; i < groups.length; i++) {
+        $('#photo_tree').tree('append', {
+            parent: parent.target,
+            data: {
+                id: "g:" + groups[i].ID,
+                text: groups[i].Name
+            }
+        });
+    }
 }
 
 function create_photo_node_col(group, groups, parent) {
@@ -956,18 +1097,19 @@ function create_article_tree_col() {
         $.ajax({
             type: "POST",
             contentType: "application/json",
-            url: "../vnv.asmx/GetGroupAll",
-            data: "{Type:1}", // 
+            url: "../vnv.asmx/GetGroups",
+            data: "{Type:1,parentID:0}", // 
             dataType: 'json',
             success: function (result) {
                 var groups = eval('(' + result.d + ')');
-
+                create_article_node_col_parent(groups.items, null);
+                /*
                 var i;
                 var root = $('#article_tree').tree('getRoot');
                 for (i = 0; i < groups.items.length; i++) {
-                    if (groups.items[i].ParentID == 0) create_article_node_col(groups.items[i], groups.items, root);
+                if (groups.items[i].ParentID == 0) create_article_node_col(groups.items[i], groups.items, root);
                 }
-
+                */
             }
         });
     }
@@ -989,18 +1131,19 @@ function create_photo_tree_col() {
         $.ajax({
             type: "POST",
             contentType: "application/json",
-            url: "../vnv.asmx/GetGroupAll",
-            data: "{Type:1}", // 
+            url: "../vnv.asmx/GetGroups",
+            data: "{Type:1,parentID:0}", // 
             dataType: 'json',
             success: function (result) {
                 var groups = eval('(' + result.d + ')');
-
+                create_photo_node_col_parent(groups.items, null);
+                /*
                 var i;
                 var root = $('#photo_tree').tree('getRoot');
                 for (i = 0; i < groups.items.length; i++) {
-                    if (groups.items[i].ParentID == 0) create_photo_node_col(groups.items[i], groups.items, root);
+                if (groups.items[i].ParentID == 0) create_photo_node_col(groups.items[i], groups.items, root);
                 }
-
+                */
             }
         });
     }
