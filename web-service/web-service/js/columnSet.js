@@ -1,4 +1,79 @@
-﻿function create_column_node_set(column, columns, parent) {
+﻿function save_column_properties() {
+    var node = $('#column_tree').tree('getSelected');
+    if (node == null || node.id == null) return;
+
+    var rows = $('#dg_column_property').datagrid('getRows');
+
+    var i, counter = 0; count = rows.length;
+    var property;
+    var properties = new Array();
+    for (i = 0; i < count; i++) {
+        if (rows[i].value == "") continue;
+
+        property = new Object();
+        property.ID = 0;
+        property.ObjectType = type;
+        property.ObjectID = id;
+        property.Key = rows[i].key;
+        property.Value = rows[i].value;
+
+        properties[counter] = property;
+        counter += 1;
+    }
+
+    var str = JSON.stringify(properties);
+
+    //alert(str);
+    if (g_php) {
+    }
+    else {
+        $.ajax({
+            type: "POST",
+            contentType: "application/json",
+            url: "../vnv.asmx/SaveProperties",
+            data: "{objectType:1,objectID:" + node.id + ",strProperties:'" + str + "'}", // {parentID:0}
+            dataType: 'json',
+            success: function (result) {
+                var ret = eval('(' + result.d + ')');
+
+            }
+        });
+    }
+}
+
+function add_column_property() {
+    //alert("add_new_property");
+    var key = $('#txt_property_name').val();
+
+    if (key == "") {
+        alert("please input property name and value");
+        return;
+    }
+
+    var rows = $('#dg_column_property').propertygrid('getRows');
+    for (var i = 0; i < rows.length; i++) {
+        if (rows[i].key == key) {
+            alert("the key has exist");
+            return;
+        }
+    }
+
+    $('#dg_column_property').datagrid('appendRow', {
+        key: key,
+        value: ""
+    });
+}
+
+function clear_column_property() {
+    var rows = $('#dg_column_property').datagrid('getRows');
+    if (rows) {
+        var i, n;
+        n = rows.length;
+        for (i = 0; i < n; i++) $('#dg_column_property').datagrid('deleteRow', 0);
+    }
+}
+
+function create_column_node_set(column, columns, parent) {
     $('#column_tree').tree('append', {
         parent: parent.target,
         data: {
@@ -24,10 +99,41 @@ function show_column_run(column) {
     }
     else {
         //console.log("column name:" + column.items.Name);
+        /*
         $("#txt_column_name").val(column.items.Name);
         $("#txt_column_code").val(column.items.Code);
         $("#txt_column_id").val(column.items.ID);
         $("#txt_column_brief").val(column.items.Brief);
+
+        $('#sel_column_type').val(column.items.ContentType);
+        $('#txt_column_template').val(column.items.Template);
+        $('#txt_column_seo_description').val(column.items.SEO_Description);
+        $('#txt_column_seo_keyword').val(column.items.SEO_Keyword);
+        $('#txt_column_seo_title').val(column.items.SEO_Title);
+        */
+        $('#txt_column_name').textbox('setValue', column.items.Name);
+        $('#txt_column_code').textbox('setValue', column.items.Code);
+        $('#txt_column_id').textbox('setValue', column.items.ID);
+        $('#txt_column_brief').textbox('setValue', column.items.Brief);
+        $('#txt_column_seo_description').textbox('setValue', column.items.SEO_Description);
+        $('#txt_column_seo_keyword').textbox('setValue', column.items.SEO_Keyword);
+        $('#txt_column_seo_title').textbox('setValue', column.items.SEO_Title);
+
+        $('#sel_column_type').combobox('setValue', column.items.ContentType);
+    }
+}
+
+function show_column_properties(result) {
+    if (result.flag < 0) {
+        alert(result.error);
+    }
+    else {
+        for (var i = 0; i < result.items.length; i++) {
+            $('#dg_column_property').datagrid('appendRow', {
+                key: result.items[i].Key,
+                value: result.items[i].Value
+            });
+        }
     }
 }
 
@@ -49,18 +155,46 @@ function show_column(columnID) {
                 var column = eval('(' + result.d + ')');
                 show_column_run(column);
             }
-        });       
+        });
+
+        // show column property
+        $.ajax({
+            type: "POST",
+            contentType: "application/json",
+            url: "../vnv.asmx/GetProperties",
+            data: "{objectType:1, objectID:" + columnID + "}", // {parentID:0}
+            dataType: 'json',
+            success: function (result) {
+                var res = eval('(' + result.d + ')');
+                show_column_properties(res);
+            }
+        });            
     }
 
 }
 
 function update_column() {
-    var column = { ID: 0, Name: "", Code: "", Brief: "" };
+    var column = { ID: 0, Name: "", Code: "", Brief: "", ContentType: 0, Template: "", SEO_Description: "", SEO_Keyword: "", SEO_Title: "" };
+    /*
     column.ID = $("#txt_column_id").val();
-    //console.log("update_column:" + column.ID);
     column.Name = $("#txt_column_name").val();
     column.Code = $("#txt_column_code").val();
     column.Brief = $("#txt_column_brief").val();
+
+    column.ContentType = $('#sel_column_type').val();
+    column.SEO_Description = $('#txt_column_seo_description').val();
+    column.SEO_Keyword = $('#txt_column_seo_keyword').val();
+    column.SEO_Title = $('#txt_column_seo_title').val();
+    */
+    column.ID = $('#txt_column_id').textbox('getValue');
+    column.Name = $('#txt_column_name').textbox('getValue');
+    column.Code = $('#txt_column_code').textbox('getValue');
+    column.Brief = $('#txt_column_brief').textbox('getValue');
+    column.SEO_Description = $('#txt_column_seo_description').textbox('getValue');
+    column.SEO_Keyword = $('#txt_column_seo_keyword').textbox('getValue');
+    column.SEO_Title = $('#txt_column_seo_title').textbox('getValue');
+
+    column.ContentType = $('#sel_column_type').combobox('getValue');
 
     var str = JSON.stringify(column);
     //console.log(str);
@@ -115,11 +249,26 @@ function add_column_run(parent_id, result) {
 }
 
 function add_column(parent_id) {
-    var column = { ID: 0, Name: "", Code: "", Brief:"", CreateDate:"2015-12-12" };
-
+    var column = { ID: 0, Name: "", Code: "", Brief: "", CreateDate: "2015-12-12", ContentType: 0, Template: "", SEO_Description: "", SEO_Keyword: "", SEO_Title: "" };
+    /*
     column.Name = $("#txt_column_name").val();
     column.Code = $("#txt_column_code").val();
     column.Brief = $("#txt_column_brief").val();
+
+    column.ContentType = $('#sel_column_type').val();
+    column.SEO_Description = $('#txt_column_seo_description').val();
+    column.SEO_Keyword = $('#txt_column_seo_keyword').val();
+    column.SEO_Title = $('#txt_column_seo_title').val();
+    */
+
+    column.Name = $('#txt_column_name').textbox('getValue');
+    column.Code = $('#txt_column_code').textbox('getValue');
+    column.Brief = $('#txt_column_brief').textbox('getValue');
+    column.SEO_Description = $('#txt_column_seo_description').textbox('getValue');
+    column.SEO_Keyword = $('#txt_column_seo_keyword').textbox('getValue');
+    column.SEO_Title = $('#txt_column_seo_title').textbox('getValue');
+
+    column.ContentType = $('#sel_column_type').combobox('getValue');
 
     var str = JSON.stringify(column);
 
@@ -251,4 +400,7 @@ function init_columnSet() {
             delete_column(node.id);
         }
     });
+
+    $('#btn_add_property').click(function () { add_column_property(); });
+    $('#btn_save_property').click(function () { save_column_property(); });
 }

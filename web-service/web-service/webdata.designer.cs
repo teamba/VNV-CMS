@@ -30,9 +30,6 @@ namespace web_service
 		
     #region 可扩展性方法定义
     partial void OnCreated();
-    partial void Insertt_Column(t_Column instance);
-    partial void Updatet_Column(t_Column instance);
-    partial void Deletet_Column(t_Column instance);
     partial void Insertt_ColumnUpdate(t_ColumnUpdate instance);
     partial void Updatet_ColumnUpdate(t_ColumnUpdate instance);
     partial void Deletet_ColumnUpdate(t_ColumnUpdate instance);
@@ -78,6 +75,9 @@ namespace web_service
     partial void Insertt_User(t_User instance);
     partial void Updatet_User(t_User instance);
     partial void Deletet_User(t_User instance);
+    partial void Insertt_Column(t_Column instance);
+    partial void Updatet_Column(t_Column instance);
+    partial void Deletet_Column(t_Column instance);
     #endregion
 		
 		public webdataDataContext() : 
@@ -108,14 +108,6 @@ namespace web_service
 				base(connection, mappingSource)
 		{
 			OnCreated();
-		}
-		
-		public System.Data.Linq.Table<t_Column> t_Column
-		{
-			get
-			{
-				return this.GetTable<t_Column>();
-			}
 		}
 		
 		public System.Data.Linq.Table<t_ColumnUpdate> t_ColumnUpdate
@@ -237,258 +229,12 @@ namespace web_service
 				return this.GetTable<t_User>();
 			}
 		}
-	}
-	
-	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.t_Column")]
-	public partial class t_Column : INotifyPropertyChanging, INotifyPropertyChanged
-	{
 		
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
-		
-		private int _ID;
-		
-		private System.Nullable<int> _ParentID;
-		
-		private string _Name;
-		
-		private string _Code;
-		
-		private string _Brief;
-		
-		private System.Nullable<int> _Type;
-		
-		private System.Nullable<System.DateTime> _CreateDate;
-		
-		private string _UID;
-		
-		private string _ParentUID;
-		
-    #region 可扩展性方法定义
-    partial void OnLoaded();
-    partial void OnValidate(System.Data.Linq.ChangeAction action);
-    partial void OnCreated();
-    partial void OnIDChanging(int value);
-    partial void OnIDChanged();
-    partial void OnParentIDChanging(System.Nullable<int> value);
-    partial void OnParentIDChanged();
-    partial void OnNameChanging(string value);
-    partial void OnNameChanged();
-    partial void OnCodeChanging(string value);
-    partial void OnCodeChanged();
-    partial void OnBriefChanging(string value);
-    partial void OnBriefChanged();
-    partial void OnTypeChanging(System.Nullable<int> value);
-    partial void OnTypeChanged();
-    partial void OnCreateDateChanging(System.Nullable<System.DateTime> value);
-    partial void OnCreateDateChanged();
-    partial void OnUIDChanging(string value);
-    partial void OnUIDChanged();
-    partial void OnParentUIDChanging(string value);
-    partial void OnParentUIDChanged();
-    #endregion
-		
-		public t_Column()
-		{
-			OnCreated();
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ID", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
-		public int ID
+		public System.Data.Linq.Table<t_Column> t_Column
 		{
 			get
 			{
-				return this._ID;
-			}
-			set
-			{
-				if ((this._ID != value))
-				{
-					this.OnIDChanging(value);
-					this.SendPropertyChanging();
-					this._ID = value;
-					this.SendPropertyChanged("ID");
-					this.OnIDChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ParentID", DbType="Int")]
-		public System.Nullable<int> ParentID
-		{
-			get
-			{
-				return this._ParentID;
-			}
-			set
-			{
-				if ((this._ParentID != value))
-				{
-					this.OnParentIDChanging(value);
-					this.SendPropertyChanging();
-					this._ParentID = value;
-					this.SendPropertyChanged("ParentID");
-					this.OnParentIDChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Name", DbType="NVarChar(32)")]
-		public string Name
-		{
-			get
-			{
-				return this._Name;
-			}
-			set
-			{
-				if ((this._Name != value))
-				{
-					this.OnNameChanging(value);
-					this.SendPropertyChanging();
-					this._Name = value;
-					this.SendPropertyChanged("Name");
-					this.OnNameChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Code", DbType="NVarChar(64)")]
-		public string Code
-		{
-			get
-			{
-				return this._Code;
-			}
-			set
-			{
-				if ((this._Code != value))
-				{
-					this.OnCodeChanging(value);
-					this.SendPropertyChanging();
-					this._Code = value;
-					this.SendPropertyChanged("Code");
-					this.OnCodeChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Brief", DbType="Text", UpdateCheck=UpdateCheck.Never)]
-		public string Brief
-		{
-			get
-			{
-				return this._Brief;
-			}
-			set
-			{
-				if ((this._Brief != value))
-				{
-					this.OnBriefChanging(value);
-					this.SendPropertyChanging();
-					this._Brief = value;
-					this.SendPropertyChanged("Brief");
-					this.OnBriefChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Type", DbType="Int")]
-		public System.Nullable<int> Type
-		{
-			get
-			{
-				return this._Type;
-			}
-			set
-			{
-				if ((this._Type != value))
-				{
-					this.OnTypeChanging(value);
-					this.SendPropertyChanging();
-					this._Type = value;
-					this.SendPropertyChanged("Type");
-					this.OnTypeChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CreateDate", DbType="DateTime")]
-		public System.Nullable<System.DateTime> CreateDate
-		{
-			get
-			{
-				return this._CreateDate;
-			}
-			set
-			{
-				if ((this._CreateDate != value))
-				{
-					this.OnCreateDateChanging(value);
-					this.SendPropertyChanging();
-					this._CreateDate = value;
-					this.SendPropertyChanged("CreateDate");
-					this.OnCreateDateChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UID", DbType="NVarChar(36)")]
-		public string UID
-		{
-			get
-			{
-				return this._UID;
-			}
-			set
-			{
-				if ((this._UID != value))
-				{
-					this.OnUIDChanging(value);
-					this.SendPropertyChanging();
-					this._UID = value;
-					this.SendPropertyChanged("UID");
-					this.OnUIDChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ParentUID", DbType="NVarChar(36)")]
-		public string ParentUID
-		{
-			get
-			{
-				return this._ParentUID;
-			}
-			set
-			{
-				if ((this._ParentUID != value))
-				{
-					this.OnParentUIDChanging(value);
-					this.SendPropertyChanging();
-					this._ParentUID = value;
-					this.SendPropertyChanged("ParentUID");
-					this.OnParentUIDChanged();
-				}
-			}
-		}
-		
-		public event PropertyChangingEventHandler PropertyChanging;
-		
-		public event PropertyChangedEventHandler PropertyChanged;
-		
-		protected virtual void SendPropertyChanging()
-		{
-			if ((this.PropertyChanging != null))
-			{
-				this.PropertyChanging(this, emptyChangingEventArgs);
-			}
-		}
-		
-		protected virtual void SendPropertyChanged(String propertyName)
-		{
-			if ((this.PropertyChanged != null))
-			{
-				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+				return this.GetTable<t_Column>();
 			}
 		}
 	}
@@ -3222,6 +2968,356 @@ namespace web_service
 					this._Status = value;
 					this.SendPropertyChanged("Status");
 					this.OnStatusChanged();
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.t_Column")]
+	public partial class t_Column : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _ID;
+		
+		private System.Nullable<int> _ParentID;
+		
+		private string _Name;
+		
+		private string _Code;
+		
+		private string _Brief;
+		
+		private System.Nullable<int> _Type;
+		
+		private System.Nullable<System.DateTime> _CreateDate;
+		
+		private string _UID;
+		
+		private string _ParentUID;
+		
+		private string _Template;
+		
+		private string _SEO_Keyword;
+		
+		private string _SEO_Title;
+		
+		private string _SEO_Description;
+		
+    #region 可扩展性方法定义
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnIDChanging(int value);
+    partial void OnIDChanged();
+    partial void OnParentIDChanging(System.Nullable<int> value);
+    partial void OnParentIDChanged();
+    partial void OnNameChanging(string value);
+    partial void OnNameChanged();
+    partial void OnCodeChanging(string value);
+    partial void OnCodeChanged();
+    partial void OnBriefChanging(string value);
+    partial void OnBriefChanged();
+    partial void OnTypeChanging(System.Nullable<int> value);
+    partial void OnTypeChanged();
+    partial void OnCreateDateChanging(System.Nullable<System.DateTime> value);
+    partial void OnCreateDateChanged();
+    partial void OnUIDChanging(string value);
+    partial void OnUIDChanged();
+    partial void OnParentUIDChanging(string value);
+    partial void OnParentUIDChanged();
+    partial void OnTemplateChanging(string value);
+    partial void OnTemplateChanged();
+    partial void OnSEO_KeywordChanging(string value);
+    partial void OnSEO_KeywordChanged();
+    partial void OnSEO_TitleChanging(string value);
+    partial void OnSEO_TitleChanged();
+    partial void OnSEO_DescriptionChanging(string value);
+    partial void OnSEO_DescriptionChanged();
+    #endregion
+		
+		public t_Column()
+		{
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ID", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int ID
+		{
+			get
+			{
+				return this._ID;
+			}
+			set
+			{
+				if ((this._ID != value))
+				{
+					this.OnIDChanging(value);
+					this.SendPropertyChanging();
+					this._ID = value;
+					this.SendPropertyChanged("ID");
+					this.OnIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ParentID", DbType="Int")]
+		public System.Nullable<int> ParentID
+		{
+			get
+			{
+				return this._ParentID;
+			}
+			set
+			{
+				if ((this._ParentID != value))
+				{
+					this.OnParentIDChanging(value);
+					this.SendPropertyChanging();
+					this._ParentID = value;
+					this.SendPropertyChanged("ParentID");
+					this.OnParentIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Name", DbType="NVarChar(32)")]
+		public string Name
+		{
+			get
+			{
+				return this._Name;
+			}
+			set
+			{
+				if ((this._Name != value))
+				{
+					this.OnNameChanging(value);
+					this.SendPropertyChanging();
+					this._Name = value;
+					this.SendPropertyChanged("Name");
+					this.OnNameChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Code", DbType="NVarChar(64)")]
+		public string Code
+		{
+			get
+			{
+				return this._Code;
+			}
+			set
+			{
+				if ((this._Code != value))
+				{
+					this.OnCodeChanging(value);
+					this.SendPropertyChanging();
+					this._Code = value;
+					this.SendPropertyChanged("Code");
+					this.OnCodeChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Brief", DbType="Text", UpdateCheck=UpdateCheck.Never)]
+		public string Brief
+		{
+			get
+			{
+				return this._Brief;
+			}
+			set
+			{
+				if ((this._Brief != value))
+				{
+					this.OnBriefChanging(value);
+					this.SendPropertyChanging();
+					this._Brief = value;
+					this.SendPropertyChanged("Brief");
+					this.OnBriefChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Type", DbType="Int")]
+		public System.Nullable<int> Type
+		{
+			get
+			{
+				return this._Type;
+			}
+			set
+			{
+				if ((this._Type != value))
+				{
+					this.OnTypeChanging(value);
+					this.SendPropertyChanging();
+					this._Type = value;
+					this.SendPropertyChanged("Type");
+					this.OnTypeChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CreateDate", DbType="DateTime")]
+		public System.Nullable<System.DateTime> CreateDate
+		{
+			get
+			{
+				return this._CreateDate;
+			}
+			set
+			{
+				if ((this._CreateDate != value))
+				{
+					this.OnCreateDateChanging(value);
+					this.SendPropertyChanging();
+					this._CreateDate = value;
+					this.SendPropertyChanged("CreateDate");
+					this.OnCreateDateChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UID", DbType="NVarChar(36)")]
+		public string UID
+		{
+			get
+			{
+				return this._UID;
+			}
+			set
+			{
+				if ((this._UID != value))
+				{
+					this.OnUIDChanging(value);
+					this.SendPropertyChanging();
+					this._UID = value;
+					this.SendPropertyChanged("UID");
+					this.OnUIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ParentUID", DbType="NVarChar(36)")]
+		public string ParentUID
+		{
+			get
+			{
+				return this._ParentUID;
+			}
+			set
+			{
+				if ((this._ParentUID != value))
+				{
+					this.OnParentUIDChanging(value);
+					this.SendPropertyChanging();
+					this._ParentUID = value;
+					this.SendPropertyChanged("ParentUID");
+					this.OnParentUIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Template", DbType="Text", UpdateCheck=UpdateCheck.Never)]
+		public string Template
+		{
+			get
+			{
+				return this._Template;
+			}
+			set
+			{
+				if ((this._Template != value))
+				{
+					this.OnTemplateChanging(value);
+					this.SendPropertyChanging();
+					this._Template = value;
+					this.SendPropertyChanged("Template");
+					this.OnTemplateChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_SEO_Keyword", DbType="Text", UpdateCheck=UpdateCheck.Never)]
+		public string SEO_Keyword
+		{
+			get
+			{
+				return this._SEO_Keyword;
+			}
+			set
+			{
+				if ((this._SEO_Keyword != value))
+				{
+					this.OnSEO_KeywordChanging(value);
+					this.SendPropertyChanging();
+					this._SEO_Keyword = value;
+					this.SendPropertyChanged("SEO_Keyword");
+					this.OnSEO_KeywordChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_SEO_Title", DbType="Text", UpdateCheck=UpdateCheck.Never)]
+		public string SEO_Title
+		{
+			get
+			{
+				return this._SEO_Title;
+			}
+			set
+			{
+				if ((this._SEO_Title != value))
+				{
+					this.OnSEO_TitleChanging(value);
+					this.SendPropertyChanging();
+					this._SEO_Title = value;
+					this.SendPropertyChanged("SEO_Title");
+					this.OnSEO_TitleChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_SEO_Description", DbType="Text", UpdateCheck=UpdateCheck.Never)]
+		public string SEO_Description
+		{
+			get
+			{
+				return this._SEO_Description;
+			}
+			set
+			{
+				if ((this._SEO_Description != value))
+				{
+					this.OnSEO_DescriptionChanging(value);
+					this.SendPropertyChanging();
+					this._SEO_Description = value;
+					this.SendPropertyChanged("SEO_Description");
+					this.OnSEO_DescriptionChanged();
 				}
 			}
 		}

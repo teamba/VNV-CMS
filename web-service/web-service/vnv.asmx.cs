@@ -75,6 +75,12 @@ namespace web_service
                 column.Code = obj.Code.Trim();
                 column.Name = obj.Name.Trim();
                 column.Brief = obj.Brief.Trim();
+
+                column.ContentType = (int)obj.Type;
+                if (obj.SEO_Description != null) column.SEO_Description = (Convert.ToString(obj.SEO_Description)).Trim();
+                if (obj.SEO_Keyword != null) column.SEO_Keyword = (Convert.ToString(obj.SEO_Keyword)).Trim();
+                if (obj.SEO_Title != null) column.SEO_Title = (Convert.ToString(obj.SEO_Title)).Trim();
+                if (obj.Template != null) column.Template = (Convert.ToString(obj.Template)).Trim();
             }
 
             GetProperties(1, columnID, column.Properties);
@@ -105,6 +111,12 @@ namespace web_service
                 obj.Name = column.Name.Trim();
                 obj.Code = column.Code.Trim();
                 obj.Brief = column.Brief.Trim();
+
+                obj.Type = column.ContentType;
+                obj.SEO_Description = column.SEO_Description.Trim();
+                obj.SEO_Keyword = column.SEO_Keyword.Trim();
+                obj.SEO_Title = column.SEO_Title.Trim();
+                //obj.Template = column.Template.Trim();
 
                 data.SubmitChanges();
 
@@ -138,8 +150,16 @@ namespace web_service
             t_Column tc = new t_Column();
             tc.ParentID = parentID;
             tc.Name = column.Name.Trim();
-            tc.Code = column.Code;
-            tc.Brief = column.Brief;
+            tc.Code = column.Code.Trim();
+            tc.Brief = column.Brief.Trim();
+            tc.CreateDate = DateTime.Now;
+
+            tc.Type = column.ContentType;
+            tc.SEO_Description = column.SEO_Description.Trim();
+            tc.SEO_Keyword = column.SEO_Keyword.Trim();
+            tc.SEO_Title = column.SEO_Title.Trim();
+            //tc.Template = column.Template.Trim();
+
             data.t_Column.InsertOnSubmit(tc);
             data.SubmitChanges();
 

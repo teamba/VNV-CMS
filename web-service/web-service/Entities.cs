@@ -33,6 +33,12 @@ namespace web_service
         public string Code { get; set; }
         public string Brief { get; set; }
 
+        public int ContentType { get; set; }
+        public string Template { get; set; }
+        public string SEO_Keyword { get; set; }
+        public string SEO_Title { get; set; }
+        public string SEO_Description { get; set; }
+
         public clsPropertySet Properties { get; set; }
 
         public clsColumnEx()
@@ -42,6 +48,12 @@ namespace web_service
             Name = "";
             Code = "";
             Brief = "";
+
+            ContentType = 1;
+            Template = "";
+            SEO_Description = "";
+            SEO_Keyword = "";
+            SEO_Title = "";
 
             Properties = new clsPropertySet();
         }
@@ -105,6 +117,8 @@ namespace web_service
     {
         public int ID { get; set; }
         public int ParentID { get; set; }
+
+        // 1--article, 2--photo
         public int Type { get; set; }
         public string Name { get; set; }
 

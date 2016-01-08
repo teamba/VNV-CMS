@@ -1,18 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?><Database Name="VWCMS" Class="webdataDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
   <Connection Mode="WebSettings" ConnectionString="Data Source=SERVER2003;Initial Catalog=VWCMS;Persist Security Info=True;User ID=sa" SettingsObjectName="System.Configuration.ConfigurationManager.ConnectionStrings" SettingsPropertyName="VWCMSConnectionString" Provider="System.Data.SqlClient" />
-  <Table Name="dbo.t_Column" Member="t_Column">
-    <Type Name="t_Column">
-      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
-      <Column Name="ParentID" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Name" Type="System.String" DbType="NVarChar(32)" CanBeNull="true" />
-      <Column Name="Code" Type="System.String" DbType="NVarChar(64)" CanBeNull="true" />
-      <Column Name="Brief" Type="System.String" DbType="Text" CanBeNull="true" UpdateCheck="Never" />
-      <Column Name="Type" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="CreateDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="UID" Type="System.String" DbType="NVarChar(36)" CanBeNull="true" />
-      <Column Name="ParentUID" Type="System.String" DbType="NVarChar(36)" CanBeNull="true" />
-    </Type>
-  </Table>
   <Table Name="dbo.t_ColumnUpdate" Member="t_ColumnUpdate">
     <Type Name="t_ColumnUpdate">
       <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
@@ -162,6 +149,23 @@
       <Column Name="Type" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="Name" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
       <Column Name="Status" Type="System.Int32" DbType="Int" CanBeNull="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.t_Column" Member="t_Column">
+    <Type Name="t_Column">
+      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="ParentID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Name" Type="System.String" DbType="NVarChar(32)" CanBeNull="true" />
+      <Column Name="Code" Type="System.String" DbType="NVarChar(64)" CanBeNull="true" />
+      <Column Name="Brief" Type="System.String" DbType="Text" CanBeNull="true" UpdateCheck="Never" />
+      <Column Name="Type" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="CreateDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="UID" Type="System.String" DbType="NVarChar(36)" CanBeNull="true" />
+      <Column Name="ParentUID" Type="System.String" DbType="NVarChar(36)" CanBeNull="true" />
+      <Column Name="Template" Type="System.String" DbType="Text" CanBeNull="true" UpdateCheck="Never" />
+      <Column Name="SEO_Keyword" Type="System.String" DbType="Text" CanBeNull="true" UpdateCheck="Never" />
+      <Column Name="SEO_Title" Type="System.String" DbType="Text" CanBeNull="true" UpdateCheck="Never" />
+      <Column Name="SEO_Description" Type="System.String" DbType="Text" CanBeNull="true" UpdateCheck="Never" />
     </Type>
   </Table>
 </Database>

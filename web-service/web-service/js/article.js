@@ -522,6 +522,8 @@ function show_group_run(group) {
             default:
                 break;
         }
+
+        $('#pg_group').propertygrid('refreshRow', i);
     }
 }
 
