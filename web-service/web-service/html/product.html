@@ -50,130 +50,76 @@
         <div class="jsFljg">
           <p>产品型号结构图</p>
         </div>
-        <div class="jsFljgCon" > 
-          <div id="jstree"> 
-          <!-- in this example the tree is populated from inline HTML -->
-            <!--
-            <ul>
-              <li>分类1 
-                <ul>
-                  <li id="child_node_1">子分类 1</li>
-                  <li>子分类 2</li>
-                </ul>
-              </li>
-              <li>分类 2</li>
-            </ul> -->
-          </div>    <!-- end of jstree -->      
+        <div class="jsFljgCon" style="width:100%;height:530px;"> 
+          <div id="div_product_tree" class="easyui-panel" style="padding:5px; width:100%; height:100%;">  
+            <ul id="product_tree" class="easyui-tree"> 
+			<li>
+				<span id="li_root_product">所有产品系列</span> 
+			</li> 
+            </ul> 
+          </div>    <!-- end of tree -->          
         </div>
       </div>
   
       <div class="con1Right">
-        <div class="jsFljg">
-          <p>型号配置参数表</p>
-        </div>
+          <div id="div_column_option" class="easyui-tabs" style="width:100%;height:560px;">
+            <div title="基本信息" style="padding:2px;">
+                <div class="easyui-layout" style="width:100%;height:100%;">
+                    <div  data-options="region:'center'">
+                      <div class="FCon_1"> 
+                        <p><span>名称</span><input name="" type="text" id="txt_company_name" class="easyui-textbox" data-options="prompt:'系列/型号名称...'"/></p>
+                        <p><span>ID</span><input name="" type="text" readonly id="txt_company_id" class="easyui-textbox" data-options="prompt:'编号(只读)'"/></p>
 
-        <div class="jsFljgCon" id="div_article_group">
-          <!-- 
-          <div class="FCon_1">
-            <p><span>分类名称</span><input name="" type="text" id="txt_group_name"/></p>
-            <p><span>ID</span><input name="" type="text" readonly id="txt_group_id"/></p>
-            <p><span>备注</span><textarea id="txt_group_brief"></textarea></p>
+                        <p><span>编码</span><input name="" type="text" id="txt_company_code" class="easyui-textbox" data-options="prompt:'编码(选项)'"/></p>
+                        <p><span>备注</span><input id="txt_company_brief" class="easyui-textbox" data-options="prompt:'备注(选项)'"></input></p>
 
+                      </div>      
+                    </div>
+
+                    <div id="div1" data-options="region:'south',split:true" style="height:40px; padding:2px; display:block"> 
+                        <a href="#" id="btn_add_company" class="easyui-linkbutton" data-options="iconCls:'icon-add'" style="width:100px">新&nbsp;&nbsp;增</a>
+                        <a href="#" id="btn_add_subcompany" class="easyui-linkbutton" data-options="iconCls:'icon-add'" style="width:100px">新子系列</a>
+                        <a href="#" id="btn_modify_company" class="easyui-linkbutton" data-options="iconCls:'icon-save'" style="width:100px">修&nbsp;&nbsp;改</a>
+                        <a href="#" id="btn_delete_company" class="easyui-linkbutton" data-options="iconCls:'icon-cut'" style="width:100px">删&nbsp;&nbsp;除</a>
+                    </div>
+                </div>
+            </div>
+
+            <div title="配置参数" style="padding:2px;">
+                <div class="easyui-layout" style="width:100%;height:100%;">
+                    <div data-options="region:'center'">
+                        <table id="dg_company_property" class="easyui-datagrid" title="" style="width:100%;height:100%"
+                                data-options="singleSelect:true,collapsible:false">
+                            <thead>
+                                <tr>
+                                    <th data-options="field:'key',width:80">属性名</th>
+                                    <th data-options="field:'value',width:80, align:'center',editor:'text'">属性值</th> 
+                                </tr>
+                            </thead>
+                        </table>
+      
+                    </div>
+
+                    <div id="div_new_property" data-options="region:'south',split:true" style="height:40px;padding:2px; display:block"> 
+                        <input id="txt_property_name" class="easyui-textbox" data-options="prompt:'新属性名称...'" style="width:40%;height:24px"> <!-- class="easyui-textbox" data-options="prompt:'新属性名称...'" -->
+                        <a id="btn_add_property" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'" style="width:100px">增加新属性</a>
+                        <a id="btn_save_property" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" style="width:100px">保存属性</a>
+                    </div>
+                </div>
+            </div>
+
+            <div title="前台展示" style="padding:2px;">
+                <div class="easyui-layout" style="width:100%;height:100%;">
+                    <div data-options="region:'north'" style="width:100%;height:50%;">
+                    </div>
+
+                    <div data-options="region:'south'" style="width:100%;height:50%;">
+                    </div>
+                </div>
+            </div>
           </div>
-          <div class="FljgConBt">
-            <p><a href="#" id="btn_add_group">新&nbsp;&nbsp;增</a></p>
-            <p><a href="#" id="btn_add_subgroup">新子分类</a></p>
-            <p><a href="#" id="btn_modify_group">修&nbsp;&nbsp;改</a></p>
-            <p><a href="#" id="btn_delete_group">删&nbsp;&nbsp;除</a></p>
-          </div>
-        -->
-        </div>
-
-        <div class="jsFljgCon" id="div_article_list" style="display:none">
-        <!--
-	        <table class="easyui-datagrid" title="DataGrid with Toolbar" style="width:700px;height:250px"
-			        data-options="rownumbers:true,singleSelect:true,url:'datagrid_data1.json',method:'get',toolbar:toolbar">
-		        <thead>
-			        <tr>
-				        <th data-options="field:'itemid',width:80">Item ID</th>
-				        <th data-options="field:'productid',width:100">Product</th>
-				        <th data-options="field:'listprice',width:80,align:'right'">List Price</th>
-				        <th data-options="field:'unitcost',width:80,align:'right'">Unit Cost</th>
-				        <th data-options="field:'attr1',width:240">Attribute</th>
-				        <th data-options="field:'status',width:60,align:'center'">Status</th>
-			        </tr>
-		        </thead>
-	        </table>
-	        <script type="text/javascript">
-	            var toolbar = [{
-	                text: 'Add',
-	                iconCls: 'icon-add',
-	                handler: function () { alert('add') }
-	            }, {
-	                text: 'Cut',
-	                iconCls: 'icon-cut',
-	                handler: function () { alert('cut') }
-	            }, '-', {
-	                text: 'Save',
-	                iconCls: 'icon-save',
-	                handler: function () { alert('save') }
-	            }];
-	        </script>
-            -->
-        </div>
-
-        <div class="jsFljgCon" id="div_article_priolity" style="display:none">
-        <!--
-	        <table class="easyui-datagrid" title="Basic DataGrid" style="width:640px;height:400px"
-			        data-options="singleSelect:true,collapsible:true,url:'datagrid_data1.json',method:'get'">
-		        <thead>
-			        <tr>
-				        <th data-options="field:'itemid',width:80">Item ID</th>
-				        <th data-options="field:'productid',width:100">Product</th>
-				        <th data-options="field:'listprice',width:80,align:'right'">List Price</th>
-				        <th data-options="field:'unitcost',width:80,align:'right'">Unit Cost</th>
-				        <th data-options="field:'attr1',width:240">Attribute</th>
-				        <th data-options="field:'status',width:160,align:'center'">Status</th>
-			        </tr>
-		        </thead>
-	        </table>
-        -->
-        </div>
-
       </div>
-      <!--
-      <div class="con1Left2">
-        <div class="jsnrjg">
-          <p>技术内容结构</p>
-        </div>
-        <div class="jsnrjgCon"> </div>
-      </div>
-  
-      <div class="con1Right2"> 
-        <div class="jsFljg">
-          <p>内容属性</p>
-        </div>
-        <div class="jsnrjgCon2">
-          <div class="FCon_2">
-            <p><span>名称</span><input name="" type="text" /></p>
-            <p><span>内容格式</span>
-              <select id="" name="" reg="">
-		            <option value="">－选择－</option>
-		            <option value=""></option>
-		            <option value=""></option>
-		            <option value=""></option>
-		          </select> 
-            </p>
-            <p><span>备注</span><textarea name="" reg="" tip="" cols="40" rows="5"></textarea></p>
-          </div>
-          <div class="FljgConBt">
-            <p><a href="#">新&nbsp;&nbsp;增</a></p>
-            <p><a href="#">修&nbsp;&nbsp;改</a></p>
-            <p><a href="#">删&nbsp;&nbsp;除</a></p>
-          </div>
-        </div>
-      </div>
-      -->
+
     </div> <!-- end of con1 -->
  
     <div class="clear"></div>

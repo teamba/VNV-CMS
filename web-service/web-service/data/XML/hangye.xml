@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<country code="86" name="中国">
+  <Province code="110000" pname="原材料">
+	  <City code="110101" cname="橡塑" />
+	  <City code="110102" cname="精细" />
+	  <City code="110103" cname="化工" />
+	  <City code="110104" cname="冶金" />
+	  <City code="110105" cname="医药" />
+	  <City code="110106" cname="能源" />
+	  <City code="110107" cname="防治" />
+	  <City code="110108" cname="建材" />
+	  <City code="110109" cname="农业" />
+
+  </Province>
+
+	<Province code="120000" pname="加工定制">
+		<City code="120101" cname="机械加工" />
+		<City code="120102" cname="轻加工" />
+		<City code="120103" cname="印刷" />
+		<City code="120104" cname="磨具" />
+		<City code="120105" cname="包装" />
+	</Province>
+
+	<Province code="130000" pname="工业品">
+		<City code="130101" cname="通用机械" />
+		<City code="130102" cname="行业设备" />
+		<City code="130103" cname="五金工具" />
+		<City code="130104" cname="电工" />
+		<City code="130105" cname="电子" />
+		<City code="130106" cname="仪器" />
+		<City code="130107" cname="汽摩" />
+		<City code="130108" cname="安防" />
+		<City code="130109" cname="照明" />
+	</Province>
+
+	<Province code="140000" pname="服装服饰">
+		<City code="140101" cname="女装" />
+		<City code="140102" cname="童装" />
+		<City code="140103" cname="男装" />
+		<City code="140104" cname="内衣" />
+		<City code="140105" cname="鞋箱包" />
+	</Province>
+
+	<Province code="150000" pname="家居百货">
+		<City code="150101" cname="家居" />
+		<City code="150102" cname="家纺" />
+		<City code="150103" cname="美容" />
+		<City code="150104" cname="家电" />
+		<City code="150105" cname="食品" />
+		<City code="150106" cname="运动" />
+	</Province>
+
+	<Province code="160000" pname="小商品">
+		<City code="160101" cname="饰品" />
+		<City code="160102" cname="礼品" />
+		<City code="160103" cname="玩具" />
+		<City code="160104" cname="数码" />
+		<City code="160105" cname="文教" />
+	</Province>
+	
+	<Province code="170000" pname="商品服务">
+		<City code="170101" cname="网店装修" />
+		<City code="170102" cname="创意设计" />
+		<City code="170103" cname="进出口代理" />
+		<City code="170104" cname="物流" />
+		<City code="170105" cname="展会" />
+	</Province>
+
+	<Province code="180000" pname="服务业">
+		<City code="180101" cname="餐饮" />
+		<City code="180102" cname="娱乐" />
+	
+	</Province>
+
+	<Province code="190000" pname="信息数码">
+		<City code="190101" cname="电脑" />
+		<City code="190102" cname="软件" />
+		<City code="190102" cname="互联网" />
+	</Province>
+
+</country>

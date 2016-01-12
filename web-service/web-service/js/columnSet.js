@@ -347,7 +347,7 @@ function init_columnSet() {
         $.ajax({
             type: "POST",
             contentType: "application/json",
-            url: "../vnv.asmx/GetColumnAll",
+            url: "../vnv.asmx/GetColumnAll", // GetColumnAll
             data: "", // {parentID:0}
             dataType: 'json',
             success: function (result) {

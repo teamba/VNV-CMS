@@ -24,17 +24,6 @@ namespace web_service
         [WebMethod(EnableSession=true)]
         public string HelloWorld()
         {
-            string strProperties = "[{\"ID\":0,\"ObjectType\":4,\"ObjectID\":\"3022\",\"Key\":\"width\",\"Value\":\"10\"},{\"ID\":0,\"ObjectType\":4,\"ObjectID\":\"3022\",\"Key\":\"height\",\"Value\":\"20\"},{\"ID\":0,\"ObjectType\":4,\"ObjectID\":\"3022\",\"Key\":\"radiao\",\"Value\":\"30\"}]";
-
-            IList objs = JsonConvert.DeserializeObject<IList>(strProperties);
-            clsPropertySet properties = new clsPropertySet();
-            clsProperty property;
-            for (int i = 0; i < objs.Count; i++)
-            {
-                property = JsonConvert.DeserializeObject<clsProperty>(Convert.ToString(objs[i]));
-                properties.Add(property);
-            }
-
             return "Hello World";
         }
 
@@ -1016,6 +1005,1210 @@ namespace web_service
             SaveProperties(objectType, objectID, properties);
 
             clsResult result = new clsResult();
+
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        #endregion
+
+        #region User Service
+
+        [WebMethod(EnableSession = true)]
+        public string GetUserAll()
+        {
+            var objs = data.t_User;
+            clsUserSet users = new clsUserSet();
+            clsUser user;
+
+            foreach (var obj in objs)
+            {
+                user = new clsUser();
+                user.Account = obj.Account.Trim();
+                user.CompanyID = (int)obj.CompanyID;
+                user.GroupID = (int)obj.GroupID;
+                user.ID = obj.ID;
+                user.Name = obj.Name.Trim();
+
+                users.Add(user);
+            }
+
+            clsResult result = new clsResult();
+
+            result.flag = users.Count;
+            result.items = users;
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string GetUsersByGroup(int groupID)
+        {
+            var objs = data.t_User.Where(u=>u.GroupID == groupID);
+            clsUserSet users = new clsUserSet();
+            clsUser user;
+
+            foreach (var obj in objs)
+            {
+                user = new clsUser();
+                user.Account = obj.Account.Trim();
+                user.CompanyID = (int)obj.CompanyID;
+                user.GroupID = (int)obj.GroupID;
+                user.ID = obj.ID;
+                user.Name = obj.Name.Trim();
+
+                users.Add(user);
+            }
+
+            clsResult result = new clsResult();
+
+            result.flag = users.Count;
+            result.items = users;
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string GetUsersByCompany(int companyID)
+        {
+            var objs = data.t_User.Where(u=>u.CompanyID == companyID);
+            clsUserSet users = new clsUserSet();
+            clsUser user;
+
+            foreach (var obj in objs)
+            {
+                user = new clsUser();
+                user.Account = obj.Account.Trim();
+                user.CompanyID = (int)obj.CompanyID;
+                user.GroupID = (int)obj.GroupID;
+                user.ID = obj.ID;
+                user.Name = obj.Name.Trim();
+
+                users.Add(user);
+            }
+
+            clsResult result = new clsResult();
+
+            result.flag = users.Count;
+            result.items = users;
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        private clsUserEx GetUserEx(string account)
+        {
+            account = account.Trim();
+            if (account == "") return null;
+
+            clsUserEx user = null;
+
+            var objs = data.t_User.Where(u => u.Account == account);
+            foreach (var obj in objs)
+            {
+                user.Account = obj.Account.Trim();
+                user.Address = obj.Address.Trim();
+                user.CellPhone = obj.CellPhone.Trim();
+                user.CompanyID = (int)obj.CompanyID;
+                user.CreateDate = (DateTime)obj.CreateDate;
+                user.eMail = obj.eMail.Trim();
+                user.FirstName = obj.FirstName.Trim();
+                user.GroupID = (int)obj.GroupID;
+                user.ID = obj.ID;
+                user.IntroducerID = (int)obj.IntroducerID;
+                user.LastName = obj.LastName.Trim();
+                user.Name = obj.Name;
+                user.Password = obj.Password.Trim();
+                user.Sex = (int)obj.Sex;
+                user.Status = (int)obj.Status;
+                user.Type = (int)obj.Type;
+                user.UID = obj.UID.Trim();
+
+                break;
+            }
+
+            return user;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string GetUserByAccount(string account)
+        {
+            clsUserEx user = GetUserEx(account);
+
+            clsResult result = new clsResult();
+            if (user == null)
+            {
+                result.flag = -1;
+                result.error = "cann't find the user";
+            }
+            else
+            {
+                result.flag = 1;
+                user.Password = ""; // cann't return the password
+                result.items = user;
+            }
+
+            string output = JsonConvert.SerializeObject(result);
+            
+            return output;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string Logoff()
+        {
+            Session["userID"] = null;
+            clsResult result = new clsResult();
+
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string Login(string account, string password)
+        {
+            Session["userID"] = null;
+            clsResult result = new clsResult();
+
+            clsUserEx user = GetUserEx(account);
+            if (user == null)
+            {
+                result.flag = -1;
+                result.error = "cann't find the user";
+            }
+            else if (user.Password != password)
+            {
+                result.flag = -2;
+                result.error = "invalid password";
+            }
+            else
+            {
+                result.flag = 1;
+                user.Password = ""; // cann't return the password
+                result.items = user;
+
+                Session["userID"] = user.ID;
+            }
+
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string GetUser(int ID)
+        {
+            var objs = data.t_User.Where(u => u.ID == ID);
+
+            clsResult result = new clsResult();
+            result.flag = -1;
+            result.error = "cann't find the user";
+
+            clsUserEx user = new clsUserEx();
+            foreach (var obj in objs)
+            {
+                user.Account = obj.Account.Trim();
+                user.Address = obj.Address.Trim();
+                user.CellPhone = obj.CellPhone.Trim();
+                user.CompanyID = (int)obj.CompanyID;
+                user.CreateDate = (DateTime)obj.CreateDate;
+                user.eMail = obj.eMail.Trim();
+                user.FirstName = obj.FirstName.Trim();
+                user.GroupID = (int)obj.GroupID;
+                user.ID = obj.ID;
+                user.IntroducerID = (int)obj.IntroducerID;
+                user.LastName = obj.LastName.Trim();
+                user.Name = obj.Name;
+                user.Password = obj.Password.Trim();
+                user.Sex = (int)obj.Sex;
+                user.Status = (int)obj.Status;
+                user.Type = (int)obj.Type;
+                user.UID = obj.UID.Trim();
+
+                result.flag = 1;
+                result.error = "";
+                result.items = user;
+                break;
+            }
+
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string AddUser(string strUserEx)
+        {
+            clsUserEx user = JsonConvert.DeserializeObject<clsUserEx>(strUserEx);
+            clsResult result = new clsResult();
+            string output = JsonConvert.SerializeObject(result);
+
+            clsUserEx check = GetUserEx(user.Account);
+            if (check != null)
+            {
+                result.flag = -1;
+                result.error = "the account had exist!";
+                output = JsonConvert.SerializeObject(result);
+
+                return output;
+            }
+
+            t_User tu = new t_User();
+            tu.Account = user.Account.Trim();
+            tu.Address = user.Address.Trim();
+            tu.CellPhone = user.CellPhone.Trim();
+            tu.CompanyID = user.CompanyID;
+            tu.CreateDate = DateTime.Now;
+            tu.eMail = user.eMail.Trim();
+            tu.FirstName = user.FirstName.Trim();
+            tu.GroupID = user.GroupID;
+            tu.IntroducerID = user.IntroducerID;
+            tu.LastName = user.LastName.Trim();
+            tu.Name = user.Name.Trim();
+            tu.Password = user.Password.Trim();
+            tu.Sex = user.Sex;
+            tu.Status = user.Status;
+            tu.Type = user.Type;
+            tu.UID = user.UID;
+
+            data.t_User.InsertOnSubmit(tu);
+            data.SubmitChanges();
+
+            user.ID = tu.ID;
+
+            result.flag = tu.ID;
+            output = JsonConvert.SerializeObject(result);
+            return output;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string UpdateUser(string strUserEx)
+        {
+            clsUserEx user = JsonConvert.DeserializeObject<clsUserEx>(strUserEx);
+
+            var obj = data.t_User.First(u => u.ID == user.ID);
+
+            clsResult result = new clsResult();
+            if (obj == null)
+            {
+                result.flag = -1;
+                result.error = "cann't find the user";
+            }
+            else
+            {
+                obj.Account = user.Account.Trim();
+                obj.Address = user.Address.Trim();
+                obj.CellPhone = user.CellPhone.Trim();
+                obj.CompanyID = user.CompanyID;
+                obj.eMail = user.eMail.Trim();
+                obj.FirstName = user.FirstName.Trim();
+                obj.GroupID = user.GroupID;
+                obj.IntroducerID = user.IntroducerID;
+                obj.LastName = user.LastName.Trim();
+                obj.Name = user.Name.Trim();
+                obj.Password = user.Password.Trim();
+                obj.Sex = user.Sex;
+                obj.Status = user.Status;
+                obj.Type = user.Type;
+                obj.UID = user.UID.Trim();
+
+                data.SubmitChanges();
+            }
+
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string DeleteUser(int ID)
+        {
+            string strSQL = "Delete t_User Where ID=" + ID;
+            data.ExecuteCommand(strSQL);
+
+            clsResult result = new clsResult();
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        #endregion
+
+        #region Company Service
+
+        [WebMethod(EnableSession = true)]
+        public string GetCompanyAll()
+        {
+            var objs = data.t_Company;
+            clsCompanySet companies = new clsCompanySet();
+            clsCompany company;
+
+            foreach (var obj in objs)
+            {
+                company = new clsCompany();
+
+                company.GroupID = (int)obj.GroupID;
+                company.ID = obj.ID;
+                company.IntroducerID = (int)obj.IntroducerID;
+                company.ListPoint = (int)obj.ListPoint;
+                company.Name = obj.Name.Trim();
+                company.ParentID = (int)company.ParentID;
+                company.Type = (int)company.Type;
+
+                companies.Add(company);
+            }
+
+            clsResult result = new clsResult();
+
+            result.flag = companies.Count;
+            result.items = companies;
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string GetCompanies(int parentID)
+        {
+            var objs = data.t_Company.Where(c=>c.ParentID == parentID);
+            clsCompanySet companies = new clsCompanySet();
+            clsCompany company;
+
+            foreach (var obj in objs)
+            {
+                company = new clsCompany();
+
+                company.GroupID = (int)obj.GroupID;
+                company.ID = obj.ID;
+                company.IntroducerID = (int)obj.IntroducerID;
+                company.ListPoint = (int)obj.ListPoint;
+                company.Name = obj.Name.Trim();
+                company.ParentID = (int)company.ParentID;
+                company.Type = (int)company.Type;
+
+                companies.Add(company);
+            }
+
+            clsResult result = new clsResult();
+
+            result.flag = companies.Count;
+            result.items = companies;
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string GetCompaniesByGroup(int groupID)
+        {
+            var objs = data.t_Company.Where(c=>c.GroupID == groupID);
+            clsCompanySet companies = new clsCompanySet();
+            clsCompany company;
+
+            foreach (var obj in objs)
+            {
+                company = new clsCompany();
+
+                company.GroupID = (int)obj.GroupID;
+                company.ID = obj.ID;
+                company.IntroducerID = (int)obj.IntroducerID;
+                company.ListPoint = (int)obj.ListPoint;
+                company.Name = obj.Name.Trim();
+                company.ParentID = (int)company.ParentID;
+                company.Type = (int)company.Type;
+
+                companies.Add(company);
+            }
+
+            clsResult result = new clsResult();
+
+            result.flag = companies.Count;
+            result.items = companies;
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string GetCompany(int ID)
+        {
+            var objs = data.t_Company.Where(c => c.ID == ID);
+
+            clsResult result = new clsResult();
+            result.flag = -1;
+            result.error = "cann't find the company";
+
+            clsCompanyEx company = new clsCompanyEx();
+            foreach (var obj in objs)
+            {
+                company.Address = obj.Address.Trim();
+                company.GroupID = (int)obj.GroupID;
+                company.ID = obj.ID;
+                company.IntroducerID = (int)obj.IntroducerID;
+                company.ListPoint = (int)obj.ListPoint;
+                company.Name = obj.Name.Trim();
+                company.ParentID = (int)obj.ParentID;
+                company.ParentUID = obj.ParentUID;
+                company.Type = (int)obj.Type;
+                company.UID = obj.UID.Trim();
+
+                result.flag = 1;
+                result.error = "";
+                result.items = company;
+                break;
+            }
+
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string DeleteCompany(int ID)
+        {
+            string strSQL = "Delete t_Company Where ID=" + ID;
+            data.ExecuteCommand(strSQL);
+
+            clsResult result = new clsResult();
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string AddCompany(string strCompanyEx)
+        {
+            clsCompanyEx company = JsonConvert.DeserializeObject<clsCompanyEx>(strCompanyEx);
+            clsResult result = new clsResult();
+            string output = JsonConvert.SerializeObject(result);
+
+            t_Company tc = new t_Company();
+            tc.Address = company.Address.Trim();
+            tc.GroupID = company.GroupID;
+            tc.IntroducerID = company.IntroducerID;
+            tc.ListPoint = company.ListPoint;
+            tc.Name = company.Name.Trim();
+            tc.ParentID = company.ParentID;
+            tc.ParentUID = company.ParentUID.Trim();
+            tc.Type = company.Type;
+            tc.UID = company.UID.Trim();
+
+            data.t_Company.InsertOnSubmit(tc);
+            data.SubmitChanges();
+
+            company.ID = tc.ID;
+
+            result.flag = tc.ID;
+            output = JsonConvert.SerializeObject(result);
+            return output;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string UpdateCompany(string strCompanyEx)
+        {
+            clsCompanyEx company = JsonConvert.DeserializeObject<clsCompanyEx>(strCompanyEx);
+
+            var obj = data.t_Company.First(c => c.ID == company.ID);
+
+            clsResult result = new clsResult();
+            if (obj == null)
+            {
+                result.flag = -1;
+                result.error = "cann't find the company";
+            }
+            else
+            {
+                obj.Address = company.Address.Trim();
+                obj.GroupID = company.GroupID;
+                obj.IntroducerID = company.IntroducerID;
+                obj.ListPoint = company.ListPoint;
+                obj.Name = company.Name.Trim();
+                obj.ParentID = company.ParentID;
+                obj.ParentUID = company.UID.Trim();
+                obj.Type = company.Type;
+                obj.UID = company.UID.Trim();
+
+                data.SubmitChanges();
+            }
+
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        #endregion
+
+        #region Priority Service
+
+        [WebMethod(EnableSession = true)]
+        public string GetPriority(int userID, int objectType, int objectID)
+        {
+            var objs = data.t_Priority.Where(p => p.ObjectID == objectID && p.ObjectType==objectType && p.UserID==userID);
+            clsPriority priority = new clsPriority();
+
+            clsResult result = new clsResult();
+            result.flag = -1;
+            result.error = "cann't find the priority";
+
+            foreach (var obj in objs)
+            {
+                priority.ID = obj.ID;
+                priority.ObjectID = (int)obj.ObjectID;
+                priority.ObjectType = (int)obj.ObjectType;
+                priority.Type = (int)obj.Type;
+                priority.UserID = (int)obj.UserID;
+
+                result.flag = 1;
+                result.error = "";
+                break;
+            }
+
+            result.flag = 1;
+            result.error = "";
+            result.items = priority;
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string GetPriorities(int objectType, int objectID)
+        {
+            var objs = data.t_Priority.Where(p => p.ObjectID == objectID && p.ObjectType == objectType);
+            clsPrioritySet priorities = new clsPrioritySet();
+            clsPriority priority;
+
+            foreach (var obj in objs)
+            {
+                priority = new clsPriority();
+                priority.ID = obj.ID;
+                priority.ObjectID = (int)obj.ObjectID;
+                priority.ObjectType = (int)obj.ObjectType;
+                priority.Type = (int)obj.Type;
+                priority.UserID = (int)obj.UserID;
+
+                priorities.Add(priority);
+            }
+
+            clsResult result = new clsResult();
+
+            result.flag = priorities.Count;
+            result.items = priorities;
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string AddPriority(string strPriority)
+        {
+            clsPriority priority = JsonConvert.DeserializeObject<clsPriority>(strPriority);
+            clsResult result = new clsResult();
+            string output = JsonConvert.SerializeObject(result);
+
+            t_Priority tp = new t_Priority();
+            tp.ObjectID = priority.ObjectID;
+            tp.ObjectType = priority.ObjectType;
+            tp.Type = priority.Type;
+            tp.UserID = priority.UserID;
+
+            data.t_Priority.InsertOnSubmit(tp);
+            data.SubmitChanges();
+
+            priority.ID = tp.ID;
+
+            result.flag = tp.ID;
+            output = JsonConvert.SerializeObject(result);
+            return output;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string UpdatePriority(string strPriority)
+        {
+            clsPriority priority = JsonConvert.DeserializeObject<clsPriority>(strPriority);
+
+            var obj = data.t_Priority.First(c => c.ID == priority.ID);
+
+            clsResult result = new clsResult();
+            if (obj == null)
+            {
+                result.flag = -1;
+                result.error = "cann't find the priority";
+            }
+            else
+            {
+                obj.ObjectID = priority.ObjectID;
+                obj.ObjectType = priority.ObjectType;
+                obj.Type = priority.Type;
+                obj.UserID = priority.UserID;
+
+                data.SubmitChanges();
+            }
+
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string DeletePriority(int ID)
+        {
+            string strSQL = "Delete t_Priority Where ID=" + ID;
+            data.ExecuteCommand(strSQL);
+
+            clsResult result = new clsResult();
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        #endregion
+
+        #region Product Service
+
+        [WebMethod(EnableSession = true)]
+        public string GetProductSerieses(int companyID)
+        {
+            var objs = data.t_ProductSeries.Where(p=>p.CompanyID == companyID);
+            clsProductSeriesSet productSerieses = new clsProductSeriesSet();
+            clsProductSeries productSeries;
+
+            foreach (var obj in objs)
+            {
+                productSeries = new clsProductSeries();
+                productSeries.CompanyID = (int)obj.CompanyID;
+                productSeries.EnglishName = obj.EnglishName.Trim();
+                productSeries.ID = obj.ID;
+                productSeries.Name = obj.Name.Trim();
+                productSeries.ParentID = (int)obj.ParentID;
+
+                productSerieses.Add(productSeries);
+            }
+
+            clsResult result = new clsResult();
+
+            result.flag = productSerieses.Count;
+            result.items = productSerieses;
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string GetProductSeriesesByParent(int parentID)
+        {
+            var objs = data.t_ProductSeries.Where(p => p.CompanyID == parentID);
+            clsProductSeriesSet productSerieses = new clsProductSeriesSet();
+            clsProductSeries productSeries;
+
+            foreach (var obj in objs)
+            {
+                productSeries = new clsProductSeries();
+                productSeries.CompanyID = (int)obj.CompanyID;
+                productSeries.EnglishName = obj.EnglishName.Trim();
+                productSeries.ID = obj.ID;
+                productSeries.Name = obj.Name.Trim();
+                productSeries.ParentID = (int)obj.ParentID;
+
+                productSerieses.Add(productSeries);
+            }
+
+            clsResult result = new clsResult();
+
+            result.flag = productSerieses.Count;
+            result.items = productSerieses;
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        private clsProductSeries GetProductSeries(int companyID, string name, string englishName)
+        {
+            clsProductSeries productSeries = null;
+
+            name = name.Trim();
+            if (name != "")
+            {
+                var objs = data.t_ProductSeries.Where(s => s.CompanyID == companyID && s.Name == name);
+                foreach (var obj in objs)
+                {
+                    productSeries = new clsProductSeries();
+                    productSeries.CompanyID = (int)obj.CompanyID;
+                    productSeries.EnglishName = obj.EnglishName.Trim();
+                    productSeries.ID = obj.ID;
+                    productSeries.Name = obj.Name.Trim();
+                    productSeries.ParentID = (int)obj.ParentID;
+
+                    return productSeries;
+                }
+            }
+
+            englishName = englishName.Trim();
+            if (englishName != "")
+            {
+                var objs = data.t_ProductSeries.Where(s => s.CompanyID == companyID && s.EnglishName == englishName);
+                foreach (var obj in objs)
+                {
+                    productSeries = new clsProductSeries();
+                    productSeries.CompanyID = (int)obj.CompanyID;
+                    productSeries.EnglishName = obj.EnglishName.Trim();
+                    productSeries.ID = obj.ID;
+                    productSeries.Name = obj.Name.Trim();
+                    productSeries.ParentID = (int)obj.ParentID;
+
+                    return productSeries;
+                }
+            }
+
+            return productSeries;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string AddProductSeries(string strProductSeries)
+        {
+            clsProductSeries series = JsonConvert.DeserializeObject<clsProductSeries>(strProductSeries);
+            clsResult result = new clsResult();
+            string output = JsonConvert.SerializeObject(result);
+
+            clsProductSeries check = GetProductSeries(series.CompanyID, series.Name, series.EnglishName);
+            if (check != null)
+            {
+                result.flag = -1;
+                result.error = "the series name or english name had been used.";
+                output = JsonConvert.SerializeObject(result);
+                return output;
+            }
+
+            t_ProductSeries tp = new t_ProductSeries();
+            tp.CompanyID = series.CompanyID;
+            tp.EnglishName = series.EnglishName.Trim();
+            tp.Name = series.Name.Trim();
+            tp.ParentID = series.ParentID;
+
+            data.t_ProductSeries.InsertOnSubmit(tp);
+            data.SubmitChanges();
+
+            series.ID = tp.ID;
+
+            result.flag = tp.ID;
+            output = JsonConvert.SerializeObject(result);
+            return output;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string UpdateProductSeries(string strProductSeries)
+        {
+            clsProductSeries series = JsonConvert.DeserializeObject<clsProductSeries>(strProductSeries);
+
+            var obj = data.t_ProductSeries.First(c => c.ID == series.ID);
+
+            clsResult result = new clsResult();
+            if (obj == null)
+            {
+                result.flag = -1;
+                result.error = "cann't find the product series";
+            }
+            else
+            {
+                obj.CompanyID = series.CompanyID;
+                obj.EnglishName = series.EnglishName.Trim();
+                obj.Name = series.Name.Trim();
+                obj.ParentID = series.ParentID;
+                
+                data.SubmitChanges();
+            }
+
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string DeleteProductSeries(int ID)
+        {
+            string strSQL = "Delete t_ProductSeries Where ID=" + ID;
+            data.ExecuteCommand(strSQL);
+
+            clsResult result = new clsResult();
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string GetProductModes(int productSeriesID)
+        {
+            var objs = data.t_ProductMode.Where(p=>p.SeriesID == productSeriesID);
+            clsProductModeSet productModes = new clsProductModeSet();
+            clsProductMode productMode;
+
+            foreach (var obj in objs)
+            {
+                productMode = new clsProductMode();
+
+                productMode.EnglishName = obj.EnglishName.Trim();
+                productMode.ID = obj.ID;
+                productMode.Name = obj.Name.Trim();
+                productMode.SeriesID = (int)obj.SeriesID;
+
+                productModes.Add(productMode);
+            }
+
+            clsResult result = new clsResult();
+
+            result.flag = productModes.Count;
+            result.items = productModes;
+            string output = JsonConvert.SerializeObject(result);
+          
+            return output;
+        }
+
+        private clsProductMode GetProductMode(int seriesID, string name, string englishName)
+        {
+            clsProductMode productMode = null;
+
+            name = name.Trim();
+            if (name != "")
+            {
+                var objs = data.t_ProductMode.Where(m => m.SeriesID == seriesID && m.Name == name);
+                foreach (var obj in objs)
+                {
+                    productMode.EnglishName = obj.EnglishName.Trim();
+                    productMode.ID = obj.ID;
+                    productMode.Name = obj.Name.Trim();
+                    productMode.SeriesID = (int)obj.SeriesID;
+
+                    return productMode;
+                }
+            }
+
+            englishName = englishName.Trim();
+            if (englishName != "")
+            {
+                var objs = data.t_ProductMode.Where(m => m.SeriesID == seriesID && m.EnglishName == englishName);
+                foreach (var obj in objs)
+                {
+                    productMode.EnglishName = obj.EnglishName.Trim();
+                    productMode.ID = obj.ID;
+                    productMode.Name = obj.Name.Trim();
+                    productMode.SeriesID = (int)obj.SeriesID;
+
+                    return productMode;
+                }
+            }
+
+            return productMode;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string AddProductMode(string strProductMode)
+        {
+            clsProductMode mode = JsonConvert.DeserializeObject<clsProductMode>(strProductMode);
+            clsResult result = new clsResult();
+            string output = JsonConvert.SerializeObject(result);
+
+            clsProductMode check = GetProductMode(mode.SeriesID, mode.Name, mode.EnglishName);
+            if (check != null)
+            {
+                result.flag = -1;
+                result.error = "the product mode name or english name had been used.";
+                output = JsonConvert.SerializeObject(result);
+                return output;
+            }
+
+            t_ProductMode tp = new t_ProductMode();
+            tp.EnglishName = mode.EnglishName.Trim();
+            tp.Name = mode.Name.Trim();
+            tp.SeriesID = mode.SeriesID;
+
+            data.t_ProductMode.InsertOnSubmit(tp);
+            data.SubmitChanges();
+
+            mode.ID = tp.ID;
+
+            result.flag = tp.ID;
+            output = JsonConvert.SerializeObject(result);
+            return output;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string UpdateProductMode(string strProductMode)
+        {
+            clsProductMode mode = JsonConvert.DeserializeObject<clsProductMode>(strProductMode);
+
+            var obj = data.t_ProductMode.First(c => c.ID == mode.ID);
+
+            clsResult result = new clsResult();
+            if (obj == null)
+            {
+                result.flag = -1;
+                result.error = "cann't find the product mode";
+            }
+            else
+            {
+                obj.EnglishName = mode.EnglishName.Trim();
+                obj.Name = mode.Name.Trim();
+                obj.SeriesID = mode.SeriesID;
+
+                data.SubmitChanges();
+            }
+
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string DeleteProductMode(int ID)
+        {
+            string strSQL = "Delete t_ProductMode Where ID=" + ID;
+            data.ExecuteCommand(strSQL);
+
+            clsResult result = new clsResult();
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string GetProductNum(int productModeID)
+        {
+            clsResult result = new clsResult();
+            result.flag = data.t_Product.Count(p => p.ModeID == productModeID);
+
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string GetProducts(int productModeID, int start, int num)
+        {
+            var objs = data.t_Product.Where(p=>p.ModeID == productModeID).Skip(start).Take(num); 
+            clsProductSet products = new clsProductSet();
+            clsProduct product;
+            foreach (var obj in objs)
+            {
+                product = new clsProduct();
+
+                product.ID = obj.ID;
+                product.ModeID = (int)obj.ModeID;
+                product.SN = obj.SN.Trim();
+
+                products.Add(product);
+            }
+
+            clsResult result = new clsResult();
+
+            result.flag = products.Count;
+            result.items = products;
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        private clsProduct GetProduct(int modeID, string SN)
+        {
+            clsProduct product = null;
+            SN = SN.Trim();
+
+            var objs = data.t_Product.Where(p => p.ModeID == modeID && p.SN == SN);
+            foreach (var obj in objs)
+            {
+                product = new clsProduct();
+                product.ID = obj.ID;
+                product.ModeID = (int)obj.ModeID;
+                product.SN = obj.SN.Trim();
+
+                break;
+            }
+
+            return product;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string AddProduct(string strProduct)
+        {
+            clsProduct product = JsonConvert.DeserializeObject<clsProduct>(strProduct);
+            clsResult result = new clsResult();
+            string output = JsonConvert.SerializeObject(result);
+
+            clsProduct check = GetProduct(product.ModeID, product.SN);
+            if (check != null)
+            {
+                result.flag = -1;
+                result.error = "the product SN had been used.";
+                output = JsonConvert.SerializeObject(result);
+                return output;
+            }
+
+            t_Product tp = new t_Product();
+            tp.ModeID = product.ModeID;
+            tp.SN = product.SN.Trim();
+
+            data.t_Product.InsertOnSubmit(tp);
+            data.SubmitChanges();
+
+            product.ID = tp.ID;
+
+            result.flag = tp.ID;
+            output = JsonConvert.SerializeObject(result);
+            return output;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string UpdateProduct(string strProduct)
+        {
+            clsProduct product = JsonConvert.DeserializeObject<clsProduct>(strProduct);
+
+            var obj = data.t_Product.First(c => c.ID == product.ID);
+
+            clsResult result = new clsResult();
+            if (obj == null)
+            {
+                result.flag = -1;
+                result.error = "cann't find the product";
+            }
+            else
+            {
+                obj.ModeID = product.ModeID;
+                obj.SN = product.SN.Trim();
+
+                data.SubmitChanges();
+            }
+
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string DeleteProduct(int ID)
+        {
+            string strSQL = "Delete t_Product Where ID=" + ID;
+            data.ExecuteCommand(strSQL);
+
+            clsResult result = new clsResult();
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        #endregion
+
+        #region Log Service
+
+        [WebMethod(EnableSession = true)]
+        public string GetLogs(int objectType, int objectID)
+        {
+            var objs = data.t_Log.Where(l=>l.ObjectID == objectID && l.ObjectType==objectType);
+            clsLogSet logs = new clsLogSet();
+            clsLog log;
+
+            foreach (var obj in objs)
+            {
+                log = new clsLog();
+
+                log.ID = obj.ID;
+                log.Action = (int)obj.Action;
+                log.Date = (DateTime)obj.Date;
+                log.Description = obj.Descrition.Trim();
+                log.IP = obj.IP.Trim();
+                log.ObjectID = (int)obj.ObjectID;
+                log.ObjectType = (int)obj.ObjectType;
+                log.UserID = (int)obj.UserID;
+
+                logs.Add(log);
+            }
+
+            clsResult result = new clsResult();
+
+            result.flag = logs.Count;
+            result.items = logs;
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string AddLog(string strLog)
+        {
+            clsLog log = JsonConvert.DeserializeObject<clsLog>(strLog);
+            clsResult result = new clsResult();
+            string output = JsonConvert.SerializeObject(result);
+
+            t_Log tl = new t_Log();
+            tl.Action = log.Action;
+            tl.Date = DateTime.Now;
+            tl.Descrition = log.Description.Trim();
+            tl.IP = log.IP.Trim();
+            tl.ObjectID = log.ObjectID;
+            tl.ObjectType = log.ObjectType;
+            tl.UserID = log.UserID;
+
+            data.t_Log.InsertOnSubmit(tl);
+            data.SubmitChanges();
+
+            log.ID = tl.ID;
+
+            result.flag = tl.ID;
+            output = JsonConvert.SerializeObject(result);
+            return output;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string DeleteLogALL()
+        {
+            string strSQL = "Delete t_Log";
+            data.ExecuteCommand(strSQL);
+
+            clsResult result = new clsResult();
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string DeleteObjectLogs(int objectType, int objectID)
+        {
+            string strSQL = "Delete t_Log Where ObjectID=" + objectID + " And ObjectType=" + objectType;
+            data.ExecuteCommand(strSQL);
+
+            clsResult result = new clsResult();
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        [WebMethod(EnableSession = true)]
+        public string DeleteUserLogs(int userID)
+        {
+            string strSQL = "Delete t_Log Where UserID=" + userID;
+            data.ExecuteCommand(strSQL);
+
+            clsResult result = new clsResult();
+            string output = JsonConvert.SerializeObject(result);
+
+            return output;
+        }
+
+        #endregion
+
+        #region District Service
+
+        [WebMethod(EnableSession = true)]
+        public string GetCountryInfo()
+        {
+            string fileName = Server.MapPath("data\\XML\\Regionalism.xml");
+            clsCountry country = new clsCountry();
+            country.Initialize(fileName);
+
+            clsResult result = new clsResult();
+            result.items = country.Provinces;
+            result.flag = country.Provinces.Count;
 
             string output = JsonConvert.SerializeObject(result);
 

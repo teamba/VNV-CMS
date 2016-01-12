@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Xml;
 
 namespace web_service
 {
@@ -472,6 +473,699 @@ namespace web_service
         public void Add(clsProperty property)
         {
             List.Add(property);
+        }
+    }
+
+    public class clsUser
+    {
+        public int ID { get; set; }
+        public int GroupID { get; set; }
+        public int CompanyID { get; set; }
+        public string Name { get; set; }
+        public string Account { get; set; }
+
+        public clsUser()
+        {
+            ID = 0;
+            GroupID = 0;
+            CompanyID = 0;
+            Name = "";
+            Account = "";
+        }
+
+        ~clsUser()
+        {
+        }
+    }
+
+    public class clsUserSet : CollectionBase
+    {
+        public clsUserSet()
+        {
+        }
+
+        ~clsUserSet()
+        {
+            List.Clear();
+        }
+
+        public clsUser this[int index]
+        {
+            get
+            {
+                if (index >= 0 && index < List.Count) return (clsUser)List[index];
+                else return null;
+            }
+
+            set
+            {
+                if (index >= 0 && index < List.Count) List[index] = value;
+            }
+        }
+
+        public void Add(clsUser user)
+        {
+            List.Add(user);
+        }
+    }
+
+    public class clsUserEx
+    {
+        public int ID { get; set; }
+        public int GroupID { get; set; }
+        public int CompanyID { get; set; }
+        public string Name { get; set; }
+        public string Account { get; set; }
+
+        public string UID { get; set; }
+        public string Password { get; set; }
+        public DateTime CreateDate { get; set; }
+        public int Type { get; set; }
+        public int Status { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public int Sex { get; set; }
+        public int IntroducerID { get; set; }
+        public string CellPhone { get; set; }
+        public string eMail { get; set; }
+        public string Address { get; set; }
+
+        public clsUserEx()
+        {
+            ID = 0;
+            GroupID = 0;
+            CompanyID = 0;
+            Name = "";
+            Account = "";
+
+            UID = "";
+            Password = "";
+            CreateDate = DateTime.Now;
+            Type = 0;
+            Status = 0;
+            FirstName = "";
+            LastName = "";
+            Sex = 0;
+            IntroducerID = 0;
+            CellPhone = "";
+            eMail = "";
+            Address = "";
+        }
+
+        ~clsUserEx()
+        {
+        }
+    }
+
+    public class clsCompany
+    {
+        public int ID { get; set; }
+        public string Name { get; set; }
+        public int GroupID { get; set; }
+        public int ParentID { get; set; }
+        public int Type { get; set; }
+        public int IntroducerID { get; set; }
+        public int ListPoint { get; set; }
+
+        public clsCompany()
+        {
+            ID = 0;
+            Name = "";
+            GroupID = 0;
+            ParentID = 0;
+            Type = 0;
+            IntroducerID = 0;
+            ListPoint = 0;
+        }
+
+        ~clsCompany()
+        {
+        }
+    }
+
+    public class clsCompanySet : CollectionBase
+    {
+        public clsCompanySet()
+        {
+        }
+
+        ~clsCompanySet()
+        {
+            List.Clear();
+        }
+
+        public clsCompany this[int index]
+        {
+            get
+            {
+                if (index >= 0 && index < List.Count) return (clsCompany)List[index];
+                else return null;
+            }
+
+            set
+            {
+                if (index >= 0 && index < List.Count) List[index] = value;
+            }
+        }
+
+        public void Add(clsCompany company)
+        {
+            List.Add(company);
+        }
+    }
+
+    public class clsCompanyEx
+    {
+        public int ID { get; set; }
+        public string Name { get; set; }
+        public int GroupID { get; set; }
+        public int ParentID { get; set; }
+        public int Type { get; set; }
+        public int IntroducerID { get; set; }
+        public int ListPoint { get; set; }
+
+        public string UID { get; set; }
+        public string Address { get; set; }
+        public string ParentUID { get; set; }
+
+        public clsCompanyEx()
+        {
+            ID = 0;
+            Name = "";
+            GroupID = 0;
+            ParentID = 0;
+            Type = 0;
+            IntroducerID = 0;
+            ListPoint = 0;
+
+            UID = "";
+            Address = "";
+            ParentUID = "";
+        }
+
+        ~clsCompanyEx()
+        {
+        }
+    }
+
+    public class clsPriority
+    {
+        public int ID { get; set; }
+        public int UserID { get; set; }
+        public int ObjectType { get; set; }
+        public int ObjectID { get; set; }
+        public int Type { get; set; }
+
+        public clsPriority()
+        {
+            ID = 0;
+            UserID = 0;
+            ObjectType = 0;
+            ObjectID = 0;
+            Type = 0;
+        }
+
+        ~clsPriority()
+        {
+        }
+    }
+
+    public class clsPrioritySet : CollectionBase
+    {
+        public clsPrioritySet()
+        {
+        }
+
+        ~clsPrioritySet()
+        {
+            List.Clear();
+        }
+
+        public clsPriority this[int index]
+        {
+            get
+            {
+                if (index >= 0 && index < List.Count) return (clsPriority)List[index];
+                else return null;
+            }
+
+            set
+            {
+                if (index >= 0 && index < List.Count) List[index] = value;
+            }
+        }
+
+        public void Add(clsPriority priority)
+        {
+            List.Add(priority);
+        }
+    }
+
+    public class clsProductSeries
+    {
+        public int ID { get; set; }
+        public int ParentID { get; set; }
+        public string Name { get; set; }
+        public string EnglishName { get; set; }
+        public int CompanyID { get; set; }
+
+        public clsProductSeries()
+        {
+            ID = 0;
+            ParentID = 0;
+            Name = "";
+            EnglishName = "";
+            CompanyID = 0;
+        }
+
+        ~clsProductSeries()
+        {
+        }
+    }
+
+    public class clsProductSeriesSet : CollectionBase
+    {
+        public clsProductSeriesSet()
+        {
+        }
+
+        ~clsProductSeriesSet()
+        {
+            List.Clear();
+        }
+
+        public clsProductSeries this[int index]
+        {
+            get
+            {
+                if (index >= 0 && index < List.Count) return (clsProductSeries)List[index];
+                else return null;
+            }
+
+            set
+            {
+                if (index >= 0 && index < List.Count) List[index] = value;
+            }
+        }
+
+        public void Add(clsProductSeries productSeries)
+        {
+            List.Add(productSeries);
+        }
+    }
+
+    public class clsProductMode
+    {
+        public int ID { get; set; }
+        public int SeriesID { get; set; }
+        public string Name { get; set; }
+        public string EnglishName { get; set; }
+
+        public clsProductMode()
+        {
+            ID = 0;
+            SeriesID = 0;
+            Name = "";
+            EnglishName = "";
+        }
+
+        ~clsProductMode()
+        {
+        }
+    }
+
+    public class clsProductModeSet : CollectionBase
+    {
+        public clsProductModeSet()
+        {
+        }
+
+        ~clsProductModeSet()
+        {
+            List.Clear();
+        }
+
+        public clsProductMode this[int index]
+        {
+            get
+            {
+                if (index >= 0 && index < List.Count) return (clsProductMode)List[index];
+                else return null;
+            }
+
+            set
+            {
+                if (index >= 0 && index < List.Count) List[index] = value;
+            }
+        }
+
+        public void Add(clsProductMode productMode)
+        {
+            List.Add(productMode);
+        }
+    }
+
+    public class clsProduct
+    {
+        public int ID { get; set; }
+        public int ModeID { get; set; }
+        public string SN { get; set; }
+
+        public clsProduct()
+        {
+            ID = 0;
+            ModeID = 0;
+            SN = "";
+        }
+
+        ~clsProduct()
+        {
+        }
+    }
+
+    public class clsProductSet : CollectionBase
+    {
+        public clsProductSet()
+        {
+        }
+
+        ~clsProductSet()
+        {
+            List.Clear();
+        }
+
+        public clsProduct this[int index]
+        {
+            get
+            {
+                if (index >= 0 && index < List.Count) return (clsProduct)List[index];
+                else return null;
+            }
+
+            set
+            {
+                if (index >= 0 && index < List.Count) List[index] = value;
+            }
+        }
+
+        public void Add(clsProduct product)
+        {
+            List.Add(product);
+        }
+    }
+
+    public class clsLog
+    {
+        public int ID { get; set; }
+        public int UserID { get; set; }
+        public int ObjectType { get; set; }
+        public int ObjectID { get; set; }
+        public int Action { get; set; }
+        public string Description { get; set; }
+        public DateTime Date { get; set; }
+        public string IP { get; set; }
+
+        public clsLog()
+        {
+            ID = 0;
+            UserID = 0;
+            ObjectType = 0;
+            ObjectID = 0;
+            Action = 0;
+            Description = "";
+            IP = "";
+        }
+
+        ~clsLog()
+        {
+        }
+    }
+
+    public class clsLogSet : CollectionBase
+    {
+        public clsLogSet()
+        {
+        }
+
+        ~clsLogSet()
+        {
+            List.Clear();
+        }
+
+        public clsLog this[int index]
+        {
+            get
+            {
+                if (index >= 0 && index < List.Count) return (clsLog)List[index];
+                else return null;
+            }
+
+            set
+            {
+                if (index >= 0 && index < List.Count) List[index] = value;
+            }
+        }
+
+        public void Add(clsLog log)
+        {
+            List.Add(log);
+        }
+    }
+
+    public class clsCountry
+    {
+        public string Code { get; set; }
+        public string Name { get; set; }
+
+        public clsProvinceSet Provinces { get; set; }
+
+        public clsCountry()
+        {
+            Code = "";
+            Name = "";
+
+            Provinces = new clsProvinceSet();
+        }
+
+        ~clsCountry()
+        {
+            Provinces.Clear();
+        }
+
+        public void Initialize(string pathFile)
+        {
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.Load(pathFile);
+
+            XmlNode country = xmlDoc.SelectSingleNode("country");
+            Code = country.Attributes["code"].Value;
+            Name = country.Attributes["name"].Value;
+
+            XmlNodeList list = country.ChildNodes;
+            if (list!=null) Provinces.Initiaze(list);
+        }
+    }
+
+    public class clsProvince
+    {
+        public string Code { get; set; }
+        public string Name { get; set; }
+
+        public clsCitySet Cities { get; set; }
+
+        public clsProvince()
+        {
+            Code = "";
+            Name = "";
+
+            Cities = new clsCitySet();
+        }
+
+        ~clsProvince()
+        {
+            Cities.Clear();
+        }
+    }
+
+    public class clsProvinceSet : CollectionBase
+    {
+        public clsProvinceSet()
+        {
+        }
+
+        ~clsProvinceSet()
+        {
+            List.Clear();
+        }
+
+        public clsProvince this[int index]
+        {
+            get
+            {
+                if (index >= 0 && index < List.Count) return (clsProvince)List[index];
+                else return null;
+            }
+
+            set
+            {
+                if (index >= 0 && index < List.Count) List[index] = value;
+            }
+        }
+
+        public void Initiaze(XmlNodeList xmlList)
+        {
+            List.Clear();
+
+            clsProvince province;
+            foreach (XmlNode node in xmlList)
+            {
+                if (node.Name != "Province") continue;
+
+                XmlNodeList list = node.ChildNodes;
+                province = new clsProvince();
+                province.Code = Convert.ToString(node.Attributes["code"].Value);
+                province.Name = Convert.ToString(node.Attributes["pname"].Value);
+                List.Add(province);
+
+                if (list != null) province.Cities.Initiaze(list);
+            }
+        }
+
+        public void Add(clsProvince province)
+        {
+            List.Add(province);
+        }
+    }
+
+    public class clsCity
+    {
+        public string Code { get; set; }
+        public string Name { get; set; }
+
+        public clsCountySet Counnties { get; set; }
+
+        public clsCity()
+        {
+            Code = "";
+            Name = "";
+
+            Counnties = new clsCountySet();
+        }
+
+        ~clsCity()
+        {
+            Counnties.Clear();
+        }
+    }
+
+    public class clsCitySet : CollectionBase
+    {
+        public clsCitySet()
+        {
+        }
+
+        ~clsCitySet()
+        {
+            List.Clear();
+        }
+
+        public clsCity this[int index]
+        {
+            get
+            {
+                if (index >= 0 && index < List.Count) return (clsCity)List[index];
+                else return null;
+            }
+
+            set
+            {
+                if (index >= 0 && index < List.Count) List[index] = value;
+            }
+        }
+
+        public void Initiaze(XmlNodeList xmlList)
+        {
+            List.Clear();
+
+            clsCity city;
+            foreach (XmlNode xn in xmlList)
+            {
+                if (xn.Name != "City") continue;
+
+                city = new clsCity();
+                city.Code = xn.Attributes["code"].Value;
+                city.Name = xn.Attributes["cname"].Value;
+
+                Add(city);
+
+                XmlNodeList list = xn.ChildNodes;
+                if (list != null) city.Counnties.Initiaze(list);
+            }
+        }
+
+        public void Add(clsCity city)
+        {
+            List.Add(city);
+        }
+    }
+
+    public class clsCounty
+    {
+        public string Code { get; set; }
+        public string Name { get; set; }
+
+        public clsCounty()
+        {
+            Code = "";
+            Name = "";
+        }
+    }
+
+    public class clsCountySet : CollectionBase
+    {
+        public clsCountySet()
+        {
+        }
+
+        ~clsCountySet()
+        {
+            List.Clear();
+        }
+
+        public clsCounty this[int index]
+        {
+            get
+            {
+                if (index >= 0 && index < List.Count) return (clsCounty)List[index];
+                else return null;
+            }
+
+            set
+            {
+                if (index >= 0 && index < List.Count) List[index] = value;
+            }
+        }
+
+        public void Initiaze(XmlNodeList xmlList)
+        {
+            List.Clear();
+
+            clsCounty county;
+            foreach (XmlNode xn in xmlList)
+            {
+                if (xn.Name != "County") continue;
+
+                county = new clsCounty();
+                county.Code = xn.Attributes["code"].Value;
+                county.Name = xn.Attributes["name"].Value;
+
+                Add(county);
+            }
+        }
+
+        public void Add(clsCounty county)
+        {
+            List.Add(county);
         }
     }
 }
